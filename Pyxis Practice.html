@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Med Cabinet Pull Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans:wght@400;600;700&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: brief + coach on top; EMR (left), station screen (middle), cabinet hardware + work surface (right) */
+  --wall:#d8dfe3; --panel:#ffffff; --enamel:#eceff0; --steel:#b7c1c6; --ink:#17252e; --muted:#566771;
+  --px-blue:#1c63c4; --px-blue2:#3a86e3; --px-dark:#1f2429; --px-green:#a2cf45; --px-bg:#dde6ef; --px-navy:#1b2a48;
+  --go:#22b066; --stop:#d24646; --wait:#e3a41f; --accent:#1c7a8b;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --f-px:"Noto Sans","Segoe UI",Verdana,sans-serif;
+  --f-pxname:"Noto Serif",Georgia,serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--wall);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.4}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #f5b83d;outline-offset:2px}
+.app{max-width:1640px;margin:0 auto;padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
+
+/* top */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.top h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1;margin:0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;background:#c3cdd3;border-radius:8px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:6px;font-weight:600;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--panel);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.tbtn{border:1px solid var(--steel);background:var(--panel);padding:7px 12px;border-radius:8px;font-weight:600;font-size:13px}
+.stat{font-family:var(--f-mono);font-size:12.5px;background:var(--panel);border:1px solid var(--steel);border-radius:8px;padding:6px 10px;font-variant-numeric:tabular-nums}
+.stat.bad b{color:var(--stop)}
+.brief{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px}
+.assign{background:var(--panel);border:1px solid var(--steel);border-radius:10px;padding:10px 14px;font-size:14.5px}
+.assign b{font-weight:600}
+.coach{border-left:5px solid var(--accent);background:#eaf4f5;border-radius:8px;padding:9px 14px;font-size:14.5px}
+.coach .lbl{font-family:var(--f-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12.5px;color:var(--accent);margin-right:6px}
+
+/* stage */
+.stage{display:grid;grid-template-columns:minmax(260px,300px) minmax(480px,560px) minmax(400px,1fr);gap:14px;align-items:start}
+@media (max-width:1380px){.stage{grid-template-columns:minmax(260px,300px) minmax(480px,1fr)}.hwcol{grid-column:1/-1}}
+@media (max-width:900px){.stage{grid-template-columns:1fr}.brief{grid-template-columns:1fr}}
+
+/* EMR */
+.emr{background:#fff;border:1px solid var(--steel);border-radius:10px;display:flex;flex-direction:column;overflow:hidden;height:716px;font-size:12.5px}
+.emr-top{background:#32434d;color:#fff;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.emr-top b{font-family:var(--f-display);font-size:17px;letter-spacing:.04em}
+.emr-ban{background:#f1f4f6;border-bottom:1px solid #d9e0e4;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.emr-ban .nm{font-weight:600;font-size:15px}
+.emr-ban .ln{color:var(--muted);font-size:11.5px;font-family:var(--f-mono)}
+.emr-ban .alg{color:#a52b2b;font-weight:600;font-size:12px}
+.emr-tabs{display:flex;border-bottom:1px solid #d9e0e4;background:#fafbfc}
+.emr-tabs button{flex:1;border:0;background:transparent;padding:7px 4px;font-weight:600;font-size:12px;color:var(--muted);border-bottom:3px solid transparent}
+.emr-tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:#32434d}
+.emr-body{flex:1;overflow:auto}
+.emr-sec{font-family:var(--f-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--muted);background:#f6f8f9;padding:4px 10px;border-bottom:1px solid #e3e8eb}
+.emr-now{background:#32434d;color:#e9f0f3;font-family:var(--f-mono);font-size:11px;padding:5px 10px}
+.emr-t{font-family:var(--f-mono);letter-spacing:.02em;text-transform:none;font-size:12px;color:#32434d;background:#e9eef1}
+.emr-t.now{background:#fdeec9;color:#6a4700}
+.emr-tabs button{font-size:10.5px;padding:7px 2px}
+.mar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:7px 10px;border-bottom:1px solid #e9edef}
+.mar .n{font-weight:600}
+.mar .s{color:var(--muted);font-size:11.5px}
+.mar .h{color:#a52b2b;font-size:11.5px;font-weight:600}
+.pom{display:inline-block;font-size:10px;font-weight:600;background:#ece4f6;color:#5b3a86;border-radius:3px;padding:0 4px;margin-left:4px;vertical-align:1px}
+.chip{font-family:var(--f-mono);font-size:11px;border-radius:4px;padding:2px 6px;white-space:nowrap;align-self:start}
+.chip.due{background:#fdeec9;color:#6a4700;font-weight:600}
+.chip.later{background:#eceff1;color:var(--muted)}
+.chip.prn{background:#e1ecfa;color:#1d4a8c}
+.chip.heldc{background:#f9dede;color:#8a1f1f;font-weight:600}
+.chip.gave{background:#dcf3e5;color:#11582f}
+.chips{display:flex;flex-direction:column;gap:3px;align-items:flex-end;align-self:start}
+.mc .due small{display:block;font-size:10px;font-weight:400;color:#4b5d70}
+.ps-row{cursor:pointer}
+.ps-dotb{border:0;background:transparent;padding:0;width:26px;height:26px;display:grid;place-items:center;border-radius:50%}
+.ps-dotb:hover i{box-shadow:0 0 0 3px rgba(29,95,208,.3)}
+.vt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.vt th,.vt td{padding:6px 10px;border-bottom:1px solid #e9edef;text-align:left}
+.vt th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.vt td.ab{color:#a52b2b;font-weight:600}
+.note{padding:8px 10px;border-bottom:1px solid #e9edef}
+.note .t{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+
+/* station */
+.station{display:flex;flex-direction:column;gap:0}
+.bezel{background:#1d2023;border-radius:22px 22px 14px 14px;padding:10px 16px 16px;box-shadow:0 8px 20px rgba(20,30,40,.3)}
+.bz-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:40px}
+.bz-brand{color:#8a949a;font-family:var(--f-px);font-size:12px;letter-spacing:.12em}
+.placard{background:#fff;color:#111;font-family:var(--f-px);font-weight:600;font-size:22px;padding:0 12px;line-height:34px;border-radius:1px}
+.px-scr{position:relative;height:600px;background:var(--px-bg);display:flex;flex-direction:column;overflow:hidden;font-family:var(--f-px);font-size:12.5px;color:#1d2a3a;border:2px solid #0d0f11}
+.shelf{background:linear-gradient(#bfc2c3,#a9adae);border-radius:0 0 12px 12px;margin:0 10px;padding:10px 14px;display:flex;align-items:center;gap:12px}
+.keys{flex:1;height:44px;border-radius:6px;background:repeating-linear-gradient(90deg,#f4f4f2 0 26px,#c9cbcb 26px 29px),#f4f4f2;opacity:.8;box-shadow:inset 0 0 0 1px #b2b5b6}
+.bioid{width:56px;height:48px;border-radius:10px;border:2px solid #555c60;background:#2a3034;display:grid;place-items:center;flex:none}
+.bioid svg{width:32px;height:32px;stroke:#6f7d85}
+.bioid.ready{border-color:#3fd1e0;box-shadow:0 0 0 4px rgba(63,209,224,.3),0 0 16px rgba(63,209,224,.6);animation:pulse 1.2s ease-in-out infinite}
+.bioid.ready svg{stroke:#8ff0f8}
+.shelf-lbl{font-size:11px;color:#3b4246;max-width:120px;line-height:1.25}
+
+/* station UI */
+.px-hdr{background:linear-gradient(var(--px-blue2),var(--px-blue));color:#fff;display:flex;align-items:center;gap:8px;padding:6px 8px;min-height:50px;flex:none}
+.px-ib{width:42px;height:36px;border-radius:6px;background:linear-gradient(#f1f7ff,#b8d3f1);border:1px solid #8db1d8;display:grid;place-items:center;flex:none}
+.px-ib svg{width:22px;height:22px}
+.px-user{display:flex;flex-direction:column;line-height:1.2}
+.px-user b{font-size:15px}
+.px-user small{font-size:12px;opacity:.95}
+.px-so{margin-left:auto;background:linear-gradient(#5f9fe8,#2f6cc0);border:1px solid #a7c8ef;color:#fff;border-radius:5px;padding:7px 12px;font-size:13px}
+.px-title{background:var(--px-dark);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 12px;min-height:42px;flex:none}
+.px-title h4{color:var(--px-green);font-size:19px;margin:0;font-weight:600}
+.px-search{border:2px solid #b8d43a;border-radius:7px;background:#f5f9ea;width:190px;padding:5px 8px;font-family:var(--f-px);font-size:12.5px}
+.px-search::placeholder{font-style:italic;color:#7a8a99}
+.px-body{flex:1;overflow:auto;min-height:0;position:relative}
+.px-foot{background:#262b30;padding:7px 8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex:none}
+.px-foot .sp{flex:1}
+.pxb{background:linear-gradient(#6a9ae0,#3561b3);color:#fff;border:1px solid #93b5e8;border-radius:5px;padding:6px 10px;font-size:12.5px;min-height:38px;line-height:1.15}
+.pxb.lite{background:linear-gradient(#f6f9fd,#cddcf0);color:#2759a8;border-color:#9fbde3}
+.pxb.dim{background:linear-gradient(#9cb6da,#7e9cc6);color:#eef3fa}
+.px-menu{height:100%;background:radial-gradient(circle at 45% 40%,#3fa7f2,#0f74cf 70%);display:grid;place-items:center;color:#fff;font-weight:700;font-size:26px;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.idle{position:absolute;inset:0;background:linear-gradient(160deg,#f7fafc,#dde7ef 60%,#eef3f7);border:0;width:100%;text-align:left;display:flex;flex-direction:column}
+.idle .it{display:flex;align-items:center;gap:8px;padding:10px;color:#1d3f7a;font-size:12.5px}
+.idle .im{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.idle .lg{display:flex;align-items:center;gap:12px;font-weight:700;font-size:30px;color:#1b2f6b}
+.idle .lg i{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#fff 0 30%,#2b8aa0 31%);display:block}
+.idle .ts{color:#1b2f6b;font-size:16px}
+.card-c{margin:auto;background:#fff;border:1px solid #b9cbe0;border-radius:8px;padding:18px;width:min(360px,90%);display:flex;flex-direction:column;gap:10px;text-align:center;box-shadow:0 4px 14px rgba(20,60,110,.12)}
+.card-c h5{margin:0;font-size:18px;color:var(--px-navy)}
+.card-c label{text-align:left;font-size:12px;color:#4b5d70}
+.card-c input{padding:9px 10px;border:1px solid #9fb6cf;border-radius:5px;font-family:var(--f-mono);font-size:15px}
+.card-c .fp{width:80px;height:80px;margin:4px auto;stroke:#2b8aa0}
+.ps-head{display:flex;justify-content:space-between;align-items:center;padding:8px 12px 2px;color:#1f5cb8;font-size:15px}
+.ps-grid{display:grid;grid-template-columns:minmax(0,1fr) 62px 74px 20px repeat(4,30px) 32px 40px;align-items:center;column-gap:4px}
+.ps-cols{padding:6px 12px;font-size:11px;color:#3d5678;border-bottom:1px solid #b9cbe0}
+.ps-cols span{text-align:center}
+.na{display:inline-block;margin-left:6px;font-family:var(--f-px);font-size:9.5px;font-weight:700;letter-spacing:.03em;color:#fff;background:#d9822b;border-radius:3px;padding:1px 4px;vertical-align:2px}
+.sorth{border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:2px 0;white-space:nowrap;cursor:pointer}
+.sorth.on{font-weight:700;color:#1d3f7a}
+.el-cols .sorth{color:#fff}.el-cols .sorth.on{color:#fff;text-decoration:underline}
+.sorth:hover{text-decoration:underline}
+.ps-rows{display:flex;flex-direction:column}
+.ps-row{background:#f4f7fa;border:0;border-bottom:1px solid #c5d3e2;padding:7px 12px;text-align:left;width:100%}
+.ps-row:hover{background:#fff}
+.ps-row.sel{background:#cfe3fb;box-shadow:inset 4px 0 0 var(--px-blue)}
+.ps-nm b{display:block;font-family:var(--f-pxname);font-size:13px;color:var(--px-navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps-nm small{font-size:11px;color:#3d4f63}
+.ps-v,.ps-l{font-size:11px;color:#2c3f55}
+.ps-ch{color:#1f5cb8;text-align:center}
+.ps-dot{display:grid;place-items:center}
+.ps-dot i{width:17px;height:17px;border-radius:50%;background:#1d5fd0;display:block}
+.ap-grid{display:grid;grid-template-columns:minmax(0,1fr) 70px 86px 64px;align-items:center;column-gap:6px}
+.ap-on{font-size:11px;color:#1d7a3e;font-weight:600;text-align:center}
+.pban{background:#eef3f8;border-bottom:1px solid #b9cbe0;padding:6px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
+.pban .nm{font-family:var(--f-pxname);font-size:16px;color:var(--px-navy)}
+.pban .nm span{font-family:var(--f-px);font-weight:400;color:#556;font-size:13px}
+.pban .ln{font-size:11px;color:#34465b}
+.pban .al{grid-row:1/3;grid-column:2;display:flex;align-items:center;gap:5px;font-size:11px;color:#1d3f7a;max-width:170px}
+.pban .al i{width:16px;height:16px;border-radius:50%;background:#1d5fd0;color:#fff;font-style:normal;font-weight:700;display:grid;place-items:center;font-size:11px;flex:none}
+.mp-tabs{display:flex;gap:6px;padding:6px 10px;background:#3d63a8}
+.mp-tabs button{background:linear-gradient(#f6f9fd,#d3e0f1);color:#2759a8;border:1px solid #a7c0e3;border-radius:5px;padding:6px 10px;font-size:12.5px}
+.mp-tabs button[aria-selected="true"]{background:linear-gradient(#3b78d6,#2156b0);color:#fff;border-color:#9cbbe8}
+.mp{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:6px;padding:6px;height:calc(100% - 100px);min-height:0}
+.mp-l,.mp-r{background:#eef2f6;border:1px solid #b9cbe0;border-radius:4px;overflow:auto;min-height:0}
+.mp-hd{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#3d5678;padding:4px 8px;background:#dfe8f2;position:sticky;top:0;z-index:1}
+.mp-x{width:24px;height:24px;border:1px solid #9fb6cf;border-radius:4px;background:#fff;font-weight:700;color:#556}
+.mc{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:4px;width:100%;text-align:left;background:#f8fafc;border:0;border-bottom:1px solid #c9d6e4;padding:6px 8px}
+.mc:hover{background:#fff}
+.mc.sel{background:#d3e6fc;box-shadow:inset 4px 0 0 var(--px-blue)}
+.mc.nl{background:#eceef1;color:#6b7684}
+.mc .n{font-family:var(--f-pxname);font-size:12.5px;color:var(--px-navy)}
+.mc.nl .n{color:#6b7684}
+.mc .s{font-size:11px}
+.mc .d{font-size:11px}
+.mc .d b{font-size:12.5px}
+.mc .r{font-size:10.5px;color:#4b5d70}
+.mc .i{font-size:10px;color:#2759a8}
+.mc .due{font-size:13px;font-weight:600;text-align:right;color:var(--px-navy)}
+.mc .due.prn{color:#1f5cb8}
+.mc .due.once{color:#1f5cb8;font-size:11px}
+.tag{display:inline-block;font-size:10px;font-weight:700;border-radius:3px;padding:1px 5px;margin-top:2px;letter-spacing:.02em}
+.tag.nl{background:#c9ced5;color:#3e4751}
+.tag.so{background:#d24646;color:#fff}
+.sel-row{display:grid;grid-template-columns:minmax(0,1fr) 40px 30px;align-items:center;gap:4px;width:100%;text-align:left;border:0;border-bottom:1px solid #c9d6e4;background:#fff;padding:6px 8px;font-size:11.5px}
+.sel-row b{font-family:var(--f-pxname);color:var(--px-navy);font-size:11.5px}
+.empty{padding:14px;text-align:center;color:#6b7c8f;font-size:12px}
+.rm{padding:10px 12px;display:flex;flex-direction:column;gap:10px;height:100%}
+.rm-wrap{display:grid;grid-template-columns:170px minmax(0,1fr);gap:12px;background:#fff;border:1px solid #b9cbe0;border-radius:6px;padding:10px}
+.rm-map .t{font-size:11px;color:#3d5678;margin-bottom:4px;font-weight:600}
+.map{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:3px;background:#c9d3dc;padding:4px;border-radius:4px}
+.map div{font-size:10px;text-align:center;padding:5px 0;border-radius:2px;background:#f3f6f9;color:#7b8a99}
+.map div.hit{background:#22b066;color:#fff;font-weight:700}
+.rm-n{font-family:var(--f-pxname);font-size:17px;color:var(--px-navy);line-height:1.2}
+.rm-s{font-size:12px;color:#3d4f63}
+.rm-q{font-size:15px;margin-top:6px}
+.rm-loc{margin-top:6px;font-size:12.5px;background:#eef3f8;border-radius:4px;padding:5px 8px}
+.rm-c{font-size:11px;color:#6b7c8f;margin-top:4px}
+.rm-bar{font-size:19px;font-weight:700;text-align:center;padding:12px;border-radius:6px;background:#1c63c4;color:#fff;letter-spacing:.02em}
+.rm-bar.wait{background:var(--wait);color:#251900}
+.rm-bar.close{background:var(--go);color:#04230f;animation:pulse 1.1s ease-in-out infinite}
+.rm-acc{display:block;width:100%;font-family:var(--f-px);font-size:21px;font-weight:700;letter-spacing:.06em;padding:12px;border-radius:6px;border:2px solid #9be3b8;background:linear-gradient(#2fbf6f,#1a8f4f);color:#fff;animation:pulse 1.1s ease-in-out infinite}
+.rm-acc.idle{animation:none;background:linear-gradient(#7fae93,#5d8c71);border-color:#a9cdb8;font-size:17px;padding:8px}
+.rm-list{background:#fff;border:1px solid #b9cbe0;border-radius:6px;padding:6px 10px;font-size:12px;display:flex;flex-direction:column;gap:2px}
+.rm-list .now{font-weight:700;color:#1c63c4}
+.tdf{min-height:62px;align-items:flex-start}
+.tdf .fn{font-size:18px;color:var(--ink)}
+.pulled{display:flex;flex-direction:column;gap:5px;background:#dde5e9;padding:8px;border-radius:7px;border:2px solid #9fadb4;max-width:360px;width:100%;margin:0 auto}
+.pl-hd,.pl-ft{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-align:center;letter-spacing:.06em}
+.pl-ft{display:flex;justify-content:center;align-items:center;gap:6px;border-top:3px solid #9fadb4;padding-top:4px}
+.bin.pk{min-height:50px}
+.rm-bar.done{background:#dfe8f2;color:#1d3f7a}
+.cnt{background:#fff;border:1px solid #b9cbe0;border-radius:6px;padding:8px 10px;display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px;align-items:center}
+.cnt label{font-size:12.5px}
+.cnt input{width:100%;padding:6px;font-size:20px;text-align:center;font-family:var(--f-mono);border:1px solid #9fb6cf;border-radius:4px;margin-top:4px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.kp button{background:linear-gradient(#f6f9fd,#d3e0f1);border:1px solid #a7c0e3;border-radius:4px;padding:4px 0;font-family:var(--f-mono)}
+.kp button.ok{grid-column:span 2;background:linear-gradient(#3b78d6,#2156b0);color:#fff}
+.dlg-bg{position:absolute;inset:0;background:rgba(10,25,45,.45);display:grid;place-items:center;z-index:20;padding:16px}
+.dlg{background:#fff;border-radius:6px;border:1px solid #6d8fbf;width:min(420px,100%);box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden}
+.dlg h6{margin:0;background:linear-gradient(var(--px-blue2),var(--px-blue));color:#fff;font-size:14px;padding:8px 12px}
+.dlg .b{padding:12px;display:flex;flex-direction:column;gap:8px;font-size:12.5px}
+.dlg .b .n{font-family:var(--f-pxname);color:var(--px-navy);font-size:14px}
+.dlg .opt{border:1px solid #a7c0e3;background:#f6f9fd;border-radius:5px;padding:9px 10px;text-align:left;color:#1d3f7a;font-size:13px}
+.dlg .opt:hover{background:#e3eefb}
+.px-toast{position:absolute;left:10px;right:10px;top:98px;z-index:15;padding:8px 10px;border-radius:5px;font-size:12.5px;line-height:1.35;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.px-toast b{display:block}
+.px-toast.err{background:#fde8e8;border:1px solid var(--stop);color:#5a1616}
+.px-toast.ok{background:#e4f7ec;border:1px solid var(--go);color:#0d4a2a}
+.px-toast.info{background:#eef4fc;border:1px solid #7da3d6;color:#1d3f7a}
+.el-top{display:flex;justify-content:space-between;align-items:center;background:#e3ecf6;border-bottom:1px solid #b9cbe0;padding:6px 12px;color:#1f5cb8;font-size:15px}
+.el-mp{display:flex;align-items:center;gap:6px;width:38%}
+.el-panes{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:6px;padding:6px;height:calc(100% - 38px);min-height:0}
+.el-l,.el-r{display:flex;flex-direction:column;min-height:0;background:#eef2f6;border:1px solid #b9cbe0;border-radius:4px;overflow:hidden}
+.el-r{background:#d7e5f5}
+.el-cols{display:grid;grid-template-columns:minmax(0,1fr) 62px 74px 20px;column-gap:4px;font-size:11px;color:#fff;background:#4c72b5;padding:6px 10px;min-height:36px;align-items:center}
+.el-cols.r{display:flex;justify-content:flex-end;padding:4px 8px}
+.el-scroll{overflow:auto;flex:1}
+.el-row{display:grid;grid-template-columns:minmax(0,1fr) 62px 74px 20px;column-gap:4px;align-items:center}
+.el-row.on{background:#e4f3e9}
+.el-my{display:flex;justify-content:space-between;align-items:center;gap:6px;background:#f6f9fc;margin:5px;border-radius:4px;padding:6px 8px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.el-x{border:0;background:transparent;color:#1d5fd0;font-weight:700;font-size:18px;width:30px;height:30px}
+.rs{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;height:calc(100% - 50px)}
+.rs-l{background:#d7e3f1;padding:6px;overflow:auto;border-right:1px solid #9fb6cf}
+.rq{display:flex;gap:6px;background:#b9cbe0;color:#1d3f7a;border-radius:4px;padding:6px;font-size:10.5px;margin-bottom:5px}
+.rq b{font-size:11px}
+.rq.on{background:#3d63a8;color:#fff}
+.rq .ar{font-size:18px;line-height:1}
+.rs-r{display:flex;flex-direction:column;min-height:0}
+.rs-hd{background:#f4f7fa;text-align:center;font-weight:700;color:#3a4a5c;font-size:14px;padding:10px;line-height:1.6;border-bottom:1px solid #b9cbe0}
+.rs-p{flex:1;background:#3b5a8c;color:#fff;display:flex;flex-direction:column;padding:16px 14px 10px;min-height:0;overflow:auto}
+.rs-p.wait{background:#8a6a16}
+.rs-p.close{background:#1f7d4a}
+.rs-p.done{background:#4f6787}
+.rs-big{text-align:center;font-size:21px;font-weight:700}
+.rs-p.close .rs-big{animation:pulse 1.1s ease-in-out infinite}
+.rs-c{margin-top:auto;font-style:italic;font-size:12px}
+.ret{display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:4px;width:100%;text-align:left;border:0;border-bottom:1px solid #c9d6e4;background:#f8fafc;padding:7px 8px;font-size:11.5px}
+.ret.sel{background:#d3e6fc;box-shadow:inset 4px 0 0 var(--px-blue)}
+.ret b{font-family:var(--f-pxname);color:var(--px-navy);font-size:12.5px}
+.ret .q{text-align:right;font-weight:600}
+
+/* hardware */
+.hwcol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.cab{display:grid;grid-template-columns:1.25fr 1fr .95fr;gap:10px;align-items:end;background:linear-gradient(#cdd5d9,#bfc8cd);padding:14px 12px 12px;border-radius:12px;border:1px solid var(--steel)}
+.unit{background:var(--enamel);border:1px solid var(--steel);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:inset 0 -5px 0 rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.08)}
+.cap{font-family:var(--f-display);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.temp{font-family:var(--f-mono);font-size:11px;background:#10232c;color:#7ef0a8;padding:1px 6px;border-radius:3px}
+.led{width:10px;height:10px;border-radius:50%;background:#b4bec3;border:1px solid #98a4aa;flex:none}
+.led.blink{background:var(--go);border-color:#178a4f;box-shadow:0 0 0 3px rgba(34,176,102,.25),0 0 10px var(--go);animation:blink .5s steps(2,start) infinite}
+.led.steady{background:var(--go);border-color:#178a4f;box-shadow:0 0 8px var(--go)}
+.drw{position:relative}
+.drw.open{z-index:5}
+.drw .front{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:16px minmax(0,1fr) 34px 10px;align-items:center;gap:6px;padding:0 8px;border:1px solid #a9b3b8;border-radius:4px;background:linear-gradient(#fafbfb,#dde2e4);text-align:left;transition:transform .7s cubic-bezier(.25,.8,.3,1),box-shadow .7s}
+.drw .front .dn{font-family:var(--f-display);font-weight:700;font-size:18px}
+.drw .front .dt{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.handle{height:5px;border-radius:3px;background:#97a5ac;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.h-D1,.h-D2,.h-D3{height:40px}.h-D4{height:54px}.h-D5{height:68px}
+.drw .tray{position:absolute;left:5%;right:5%;bottom:calc(100% - 8px);height:84px;z-index:3;transform-origin:50% 100%;transform:perspective(300px) rotateX(82deg) scaleY(.05);opacity:0;transition:transform .8s cubic-bezier(.25,.8,.3,1),opacity .3s;background:#aab6bc;border:1px solid #7f8d94;border-radius:4px 4px 0 0;padding:4px;pointer-events:none}
+.drw.open .tray{transform:perspective(300px) rotateX(30deg) scaleY(1);opacity:1}
+.drw.open .front{transform:translateY(6px) scale(1.05);box-shadow:0 12px 20px rgba(0,0,0,.3);z-index:4}
+.tg{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:2px;height:100%}
+.tg i{background:#eef1f2;border-radius:1px;display:block}
+.tg.cubie i{background:linear-gradient(#e9eef0,#cdd5d9)}
+.tg.locklid i{background:linear-gradient(#e3e8ea,#c3cbcf);border:1px solid #98a4aa}
+.tg i.hit{background:#3fdc88 !important;box-shadow:0 0 8px #3fdc88}
+.rbin{position:relative;height:34px;border-radius:4px;perspective:260px}
+.rbin .slot{position:absolute;inset:0;background:#1b2226;border-radius:4px;color:#7ef0a8;font:600 10px var(--f-mono);display:grid;place-items:center;letter-spacing:.08em}
+.rbin .flap{position:absolute;inset:0;transform-origin:50% 0;transition:transform .7s cubic-bezier(.25,.8,.3,1);background:linear-gradient(#f7f8f8,#d6dcdf);border:1px solid #a9b3b8;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:11px;color:var(--muted);width:100%}
+.rbin.open .flap{transform:rotateX(-72deg)}
+.dw{position:relative;perspective:900px;border-radius:5px}
+.dw .inside{position:absolute;inset:0;display:grid;grid-template-columns:repeat(var(--cols),1fr);grid-auto-rows:1fr;gap:4px;padding:6px;background:#f2f5f6;border:1px solid #a9b3b8;border-radius:5px}
+.dw .inside .b{background:rgba(255,255,255,.95);border:1px solid #c3ccd0;border-bottom:3px solid #b3bdc2;border-radius:2px;font:600 9.5px var(--f-mono);color:#56646b;display:flex;align-items:flex-start;justify-content:center;padding-top:2px}
+.dw .inside .b.hit{outline:2px solid var(--go);background:#e3fbee;color:#0c5a31}
+.dw.fr .inside{background:#eaf3f7}
+.leaf{position:absolute;inset:0;border-radius:5px;transform-origin:0 50%;transition:transform 1s cubic-bezier(.3,.75,.3,1),box-shadow 1s;background:linear-gradient(135deg,rgba(236,244,248,.62),rgba(196,214,224,.4) 50%,rgba(236,244,248,.62));border:4px solid #b2bbc0;display:flex;flex-direction:column;justify-content:space-between;padding:5px 6px;text-align:left;width:100%}
+.leaf .row{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.leaf .dn{font-family:var(--f-display);font-weight:700;font-size:15px;background:rgba(255,255,255,.85);border-radius:3px;padding:0 4px}
+.leaf .vh{position:absolute;right:5px;top:30%;width:6px;height:40%;border-radius:3px;background:#97a5ac}
+.leaf .st{font-size:10.5px;background:rgba(255,255,255,.85);border-radius:3px;padding:0 4px;align-self:flex-start}
+.dw.fr .leaf{background:linear-gradient(140deg,rgba(225,240,247,.75),rgba(196,222,234,.6) 60%,rgba(225,240,247,.75))}
+.dw.open .leaf{transform:rotateY(-76deg);box-shadow:10px 0 16px rgba(0,0,0,.25)}
+.h-T{height:116px}.h-FR{height:226px}
+
+/* work surface */
+.work{background:var(--panel);border:1px solid var(--steel);border-radius:10px;padding:12px;min-height:250px;display:flex;flex-direction:column;gap:10px}
+.wk-hd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.wk-hd h3{margin:0;font-family:var(--f-display);font-size:21px;font-weight:700}
+.wchip{font-family:var(--f-mono);font-size:11.5px;padding:3px 8px;border-radius:20px;background:#e5ecef}
+.wchip.go{background:#d7f3e4;color:#0e5a33}.wchip.wait{background:#fbedc9;color:#6a4a00}
+.idle-ws{color:var(--muted);display:grid;place-items:center;flex:1;text-align:center;font-size:13.5px;border:1.5px dashed var(--steel);border-radius:8px;padding:20px}
+.tray{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:6px;background:#c7d1d6;padding:8px;border-radius:7px;border:1px solid #aab7bd}
+.tray.door{background:#e3e9ec;gap:8px}
+.tray.fridge{background:#e2eef3}
+.bin{background:#fff;border:1px solid #b3bfc5;border-radius:4px;padding:6px 7px 7px;text-align:left;min-height:74px;display:flex;flex-direction:column;gap:3px;font-size:12px;line-height:1.25}
+.bin:hover{border-color:var(--accent)}
+.bin .id,.pocket .id{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.bin .lb,.pocket .lb{font-weight:600}
+.bin .q{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-top:auto}
+.bin.go{outline:3px solid var(--go);outline-offset:-1px;background:#e9fbf0;border-color:var(--go)}
+.bin.taken{background:#eef8f2;border-color:var(--go)}
+.bc{display:inline-block;width:30px;height:9px;background:repeating-linear-gradient(90deg,#333 0 1px,transparent 1px 2px,#333 2px 4px,transparent 4px 5px,#333 5px 6px,transparent 6px 8px)}
+.shelf-l{grid-column:1/-1;font-family:var(--f-mono);font-size:10px;color:var(--muted);border-bottom:3px solid #b8c4ca;padding-bottom:1px}
+.pocket{border-radius:4px;padding:6px 7px;text-align:left;min-height:74px;display:flex;flex-direction:column;gap:3px;font-size:12px;line-height:1.25;border:1px solid #a9b6bc}
+.pocket.closed{background:linear-gradient(#eef2f3,#d9e0e3)}
+.pocket.unlocked{outline:3px solid var(--go);outline-offset:-1px}
+.pocket.open{background:#fff;border-color:var(--go);outline:3px solid var(--go);outline-offset:-1px}
+.pocket .lid{font-family:var(--f-mono);font-size:10px;background:#d7f3e4;color:#0e5a33;border-radius:3px;padding:1px 5px;align-self:flex-start}
+.pocket .lk{display:flex;align-items:center;gap:5px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.pocket .btns{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto}
+.mini{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:4px;padding:5px 8px;font-size:12px;font-weight:600}
+.mini.alt{background:#fff;color:var(--accent)}
+.pills{display:flex;flex-wrap:wrap;gap:3px;padding:3px 0}
+.pill{width:15px;height:8px;border-radius:5px;background:#f1ead2;border:1px solid #c2b58a}
+.pill.big{width:18px;height:10px}
+.push{border:1px solid #8d9ca4;background:linear-gradient(#f6f8f7,#dfe5e8);border-radius:7px;padding:10px;font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:.04em}
+.push:hover{border-color:var(--ink)}
+.rb-ws{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:center}
+.rb-box{background:#1b2226;border-radius:8px;min-height:110px;display:grid;place-items:center;color:#7ef0a8;font-family:var(--f-mono);font-size:12px;padding:10px;text-align:center}
+.hand{border:2px dashed var(--accent);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.foot{color:var(--muted);font-size:12px;max-width:100ch}
+
+/* results */
+.modal{position:fixed;inset:0;background:rgba(14,30,40,.55);display:grid;place-items:center;padding:16px;z-index:50}
+.modal[hidden]{display:none}
+.mbox{background:var(--panel);border-radius:12px;max-width:700px;width:100%;max-height:92%;overflow:auto;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.mbox h2{font-family:var(--f-display);font-size:32px;margin:0 0 2px;line-height:1.05}
+.mbox h3{font-family:var(--f-display);font-size:18px;margin:16px 0 6px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.mstats{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 4px}
+.mstats div{background:#eef3f6;border-radius:8px;padding:7px 12px;font-size:12.5px}
+.mstats b{display:block;font-family:var(--f-display);font-size:24px;font-variant-numeric:tabular-nums}
+.ck{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:13.5px}
+.ck li::before{content:"✗ ";color:var(--stop);font-weight:700}
+.ck li.y::before{content:"✓ ";color:var(--go)}
+.elist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.elist li{border-left:4px solid var(--stop);background:#fbf0f0;border-radius:0 6px 6px 0;padding:7px 10px;font-size:13.5px}
+.elist li span{display:block;color:var(--muted);font-size:12.5px}
+.tlist{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.clean{border-left:4px solid var(--go);background:#eef9f3;padding:9px 12px;border-radius:0 6px 6px 0}
+.mact{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.mact button{flex:1;min-width:160px;padding:10px;border-radius:8px;font-weight:600;border:1px solid var(--accent);background:var(--accent);color:#fff}
+.mact button.alt{background:#fff;color:var(--accent)}
+
+#mP.locked{opacity:.55}
+.quiz{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.qz{border:1px solid var(--steel);border-radius:8px;padding:10px 12px;margin:0;display:flex;flex-direction:column;gap:5px}
+.qz legend{padding:0 4px;font-size:14.5px;max-width:60ch}
+.qz label{display:flex;gap:8px;align-items:flex-start;font-size:14px;padding:4px 6px;border-radius:5px;cursor:pointer}
+.qz label:hover{background:#eef3f6}
+.qz.ok{border-color:var(--go);background:#f2fbf6}
+.qz.no{border-color:var(--stop);background:#fdf3f3}
+.qz-fb{font-size:13px;color:#33424c}
+.qz-miss{color:var(--stop);font-weight:600}
+.qz-score{flex-basis:100%;margin:0 0 4px;font-size:16px}
+.mact.qz-done{flex-wrap:wrap}
+.app[hidden],.exit[hidden]{display:none}
+.exit{min-height:100vh;display:grid;place-items:center;padding:24px}
+.exit-c{background:var(--panel);border:1px solid var(--steel);border-radius:12px;padding:28px 30px;max-width:520px;text-align:center}
+.exit-c h1{font-family:var(--f-display);font-size:32px;margin:0 0 8px}
+.exit-c .mact button{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:10px 16px;font-weight:600}
+.coach{display:flex;flex-direction:column;gap:4px}
+.tut-top{display:flex;align-items:center;gap:10px}
+.tut-bar{flex:1;height:6px;background:#cfe1e4;border-radius:3px;overflow:hidden}
+.tut-bar i{display:block;height:100%;background:var(--accent)}
+.tut-t{font-family:var(--f-display);font-weight:700;font-size:21px;line-height:1.1}
+.tut-a{font-size:14px}
+.tut-c{font-size:14px;background:#fff;border-radius:6px;padding:6px 10px;border:1px solid #cfe1e4}
+.tut-spot{outline:3px solid #ff9419 !important;outline-offset:2px;box-shadow:0 0 0 6px rgba(255,148,25,.35) !important;animation:spot 1.1s ease-in-out infinite}
+@keyframes spot{50%{box-shadow:0 0 0 10px rgba(255,148,25,.12)}}
+.cert-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.cert-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+.cert-form input{padding:8px 10px;border:1px solid var(--steel);border-radius:6px;font:inherit;font-weight:400}
+#cert{border:1px solid var(--steel);border-radius:8px;padding:10px;background:#fff}
+.cert-in{border:3px double #1c7a8b;border-radius:6px;padding:22px 26px;text-align:center;display:flex;flex-direction:column;gap:8px}
+.cert-k{font-family:var(--f-display);letter-spacing:.2em;text-transform:uppercase;color:#1c7a8b;font-size:14px;font-weight:700}
+.cert-h{font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1.05}
+.cert-p{font-size:13.5px;color:#33424c;max-width:60ch;margin:0 auto}
+.cert-n{font-family:var(--f-pxname);font-size:30px;border-bottom:1px solid #9aa8af;padding:2px 20px;margin:2px auto;min-width:60%}
+.cert-g{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;text-align:left;margin-top:6px;font-size:13px}
+.cert-g span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cert-s{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:26px;font-size:11.5px;color:var(--muted)}
+.cert-s div{border-top:1px solid #33424c;padding-top:4px}
+.cert-f{font-size:10px;color:var(--muted);margin-top:4px}
+@media print{
+  @page{size:landscape;margin:12mm}
+  body *{visibility:hidden !important}
+  #cert,#cert *{visibility:visible !important}
+  .modal{position:static;background:none;padding:0;display:block}
+  .mbox{box-shadow:none;max-height:none;overflow:visible;padding:0}
+  #cert{position:absolute;left:0;top:0;width:100%;border:0}
+}
+@keyframes blink{50%{opacity:.2}}
+@keyframes pulse{50%{filter:brightness(1.15)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>Med Cabinet Pull Practice</h1>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Mode">
+        <button id="mG" data-act="mode" data-v="tutorial">1 · Tutorial</button>
+        <button id="mP" data-act="mode" data-v="practice">2 · Practice</button>
+      </div>
+      <span class="stat">Time <b id="timer">0:00</b></span>
+      <span class="stat" id="errStat">Errors <b id="errCount">0</b></span>
+      <button class="tbtn" data-act="again">Restart</button>
+      <button class="tbtn" data-act="new">New patient</button>
+    </div>
+  </header>
+  <section class="brief"><div class="assign" id="assign"></div><div class="coach" id="coach"></div></section>
+  <main class="stage">
+    <section class="emr" id="emr" aria-label="EMR"></section>
+    <section class="station">
+      <div class="bezel">
+        <div class="bz-top"><span class="bz-brand">TRAINING STATION</span><span class="placard">2E-PCU</span><span></span></div>
+        <div class="px-scr" id="pxscr" aria-live="polite"></div>
+      </div>
+      <div class="shelf">
+        <div class="keys" aria-hidden="true"></div>
+        <span class="shelf-lbl">BioID reader: click it when the screen asks for your fingerprint.</span>
+        <button class="bioid" id="bioid" data-act="bio" aria-label="BioID fingerprint reader"><svg viewBox="0 0 40 40" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 30c-2-3-3-6-3-10a11 11 0 0 1 22 0"/><path d="M16 33c-2-4-3-8-3-13a7 7 0 0 1 14 0c0 3-.5 5-1 7"/><path d="M20 20c0 5 1 9 3 13"/><path d="M31 24c0 3-1 6-2 8"/><path d="M8 14a14 14 0 0 1 24 0"/></svg></button>
+      </div>
+    </section>
+    <section class="hwcol">
+      <div class="cab" id="cab"></div>
+      <div class="work" id="work"></div>
+    </section>
+  </main>
+  <p class="foot">Training simulation for nursing students. It follows the general workflow of automated dispensing cabinets such as Pyxis but is not affiliated with or endorsed by BD. All patients are fictional. Follow your facility's policies, and scan the wristband and every medication at the bedside.</p>
+</div>
+<div class="exit" id="exitScreen" hidden><div class="exit-c"><h1>You have exited the simulation</h1><p>Nice work. If you printed your certificate of completion, bring it to clinical.</p><p>You can close this browser tab now.</p><div class="mact"><button data-act="restart">Start over</button></div></div></div>
+<div class="modal" id="modal" hidden><div class="mbox" id="mbox" role="dialog" aria-modal="true" aria-labelledby="mtitle"></div></div>
+
+<script>
+/* ================= data ================= */
+const CENSUS=[
+ {id:'a1',last:'HOLLOWAY',first:'MARGARET',mi:'J',dob:'2/14/1945',sex:'F',visit:'7716204',loc:'2E 0212/1'},
+ {id:'a2',last:'QUINTERO',first:'ELENA',mi:'A',dob:'9/2/1972',sex:'F',visit:'7720931',loc:'2E 0218/2'},
+ {id:'a3',last:'BRANDT',first:'OTTO',mi:'',dob:'2/14/1947',sex:'M',visit:'7709816',loc:'2E 0206/1'},
+ {id:'b1',last:'REYES',first:'ANTONIO',mi:'M',dob:'5/9/1959',sex:'M',visit:'7718452',loc:'2E 0207/2'},
+ {id:'b2',last:'REYES',first:'ANTONIO',mi:'',dob:'5/19/1985',sex:'M',visit:'7721067',loc:'2E 0221/1'},
+ {id:'b3',last:'FOSTER',first:'DIANE',mi:'L',dob:'5/9/1958',sex:'F',visit:'7714720',loc:'2E 0209/2'},
+ {id:'c1',last:'OKONKWO',first:'RUTH',mi:'A',dob:'1/17/1944',sex:'F',visit:'7719377',loc:'2E 0215/1'},
+ {id:'c2',last:'MAGNUSSON',first:'ERIK',mi:'',dob:'8/4/1971',sex:'M',visit:'7722340',loc:'2E 0202/1'},
+ {id:'c3',last:'SULLIVAN',first:'KATHLEEN',mi:'',dob:'1/17/1949',sex:'F',visit:'7710198',loc:'2E 0211/1'},
+ {id:'x1',last:'PRZYBYLSKI',first:'WALTER',mi:'F',dob:'12/2/1950',sex:'M',visit:'7712288',loc:'2E 0203/1'},
+ {id:'x2',last:'ACHEAMPONG',first:'GRACE',mi:'E',dob:'4/26/1960',sex:'F',visit:'7715531',loc:'2E 0214/2'},
+ {id:'x3',last:'KOWALCZYK',first:'DOROTHY',mi:'M',dob:'6/11/1939',sex:'F',visit:'7708874',loc:'2E 0220/1'},
+ {id:'x4',last:'BASHIR',first:'YUSUF',mi:'',dob:'10/3/1981',sex:'M',visit:'7723109',loc:'2E 0216/2'},
+ {id:'x5',last:'NAKAMURA',first:'KENJI',mi:'T',dob:'3/22/1952',sex:'M',visit:'7724096',loc:'2E 0246/2'},
+ {id:'x6',last:'FERREIRA',first:'LUCIA',mi:'M',dob:'11/8/1966',sex:'F',visit:'7714285',loc:'2E 0246/1'},
+ {id:'x7',last:'OSEI',first:'KWAME',mi:'',dob:'7/14/1948',sex:'M',visit:'7719463',loc:'2E 0247/1'},
+ {id:'x8',last:'LINDQVIST',first:'INGRID',mi:'',dob:'1/30/1941',sex:'F',visit:'7705923',loc:'2E 0230/1'},
+ {id:'x9',last:'DELACROIX',first:'MARIE',mi:'C',dob:'9/19/1958',sex:'F',visit:'7721099',loc:'2E 0234/1'},
+ {id:'x10',last:'HARGROVE',first:'DENNIS',mi:'W',dob:'2/5/1963',sex:'M',visit:'7714981',loc:'2E 0248/2'},
+ {id:'x11',last:'PATEL',first:'ANJALI',mi:'R',dob:'6/27/1975',sex:'F',visit:'7713320',loc:'2E 0232/1'},
+ {id:'x12',last:'MCALLISTER',first:'FIONA',mi:'J',dob:'12/12/1949',sex:'F',visit:'7715710',loc:'2E 0254/1'},
+ {id:'x13',last:'RUIZ',first:'ESTEBAN',mi:'',dob:'4/3/1956',sex:'M',visit:'7706089',loc:'2E 0235/2'},
+ {id:'x14',last:'TRAN',first:'MINH',mi:'Q',dob:'8/21/1944',sex:'M',visit:'7715360',loc:'2E 0260/1'},
+ {id:'x15',last:'WOJCIK',first:'HELENA',mi:'',dob:'10/15/1938',sex:'F',visit:'7715183',loc:'2E 0222/1'},
+ {id:'x16',last:'GALLAGHER',first:'PATRICK',mi:'S',dob:'5/30/1960',sex:'M',visit:'7724545',loc:'2E 0207/1'},
+ {id:'x17',last:'ABERNATHY',first:'LOUISE',mi:'E',dob:'3/9/1947',sex:'F',visit:'7721041',loc:'2E 0252/1'},
+ {id:'x18',last:'KIM',first:'SOO-JIN',mi:'',dob:'2/18/1970',sex:'F',visit:'7713729',loc:'2E 0256/2'},
+ {id:'x19',last:'NWOSU',first:'CHIDI',mi:'',dob:'11/27/1981',sex:'M',visit:'7711490',loc:'2E 0236/2'},
+ {id:'x20',last:'BERGSTROM',first:'CARL',mi:'A',dob:'7/2/1953',sex:'M',visit:'7710055',loc:'2E 0206/2'},
+ {id:'x21',last:'SANTIAGO',first:'ROSA',mi:'I',dob:'1/11/1962',sex:'F',visit:'7715625',loc:'2E 0242/1'},
+ {id:'x22',last:'DUBOIS',first:'HENRI',mi:'',dob:'9/6/1946',sex:'M',visit:'7724802',loc:'2E 0231/1'},
+ {id:'x23',last:'PRESCOTT',first:'JUNE',mi:'R',dob:'2/14/1950',sex:'F',visit:'7720592',loc:'2E 0251/1'},
+ {id:'x24',last:'IVANOVA',first:'NADIA',mi:'',dob:'4/24/1968',sex:'F',visit:'7721673',loc:'2E 0233/2'},
+ {id:'x25',last:'WHITAKER',first:'GEORGE',mi:'H',dob:'12/30/1939',sex:'M',visit:'7722435',loc:'2E 0249/1'},
+ {id:'x26',last:'MENDOZA',first:'CARLOS',mi:'A',dob:'6/6/1977',sex:'M',visit:'7722764',loc:'2E 0217/2'},
+ {id:'x27',last:'FINNEGAN',first:'BRIDGET',mi:'M',dob:'8/17/1955',sex:'F',visit:'7715026',loc:'2E 0226/1'},
+ {id:'x28',last:'ADEYEMI',first:'FOLAKE',mi:'',dob:'5/5/1964',sex:'F',visit:'7715674',loc:'2E 0231/2'},
+ {id:'x29',last:'CHAMBERS',first:'LEONARD',mi:'T',dob:'10/28/1942',sex:'M',visit:'7723820',loc:'2E 0217/1'},
+ {id:'x30',last:'NOVAK',first:'PETRA',mi:'',dob:'3/1/1973',sex:'F',visit:'7716186',loc:'2E 0253/2'},
+ {id:'x31',last:'VARGAS',first:'LUISA',mi:'M',dob:'5/9/1961',sex:'F',visit:'7717167',loc:'2E 0256/1'}
+];
+const SRC={
+ pen:'Insulin pens are patient-specific and never shared between patients. Pharmacy labels a pen for this patient. Get it from the patient-specific bin or refrigerator shelf your unit uses.',
+ drops:'Eye drops come as one bottle per patient from pharmacy. Get them from the patient\'s labeled med bin.',
+ nasal:'Nasal sprays come as one bottle per patient from pharmacy. Get it from the patient\'s labeled med bin.',
+ inh:'Inhalers are one device per patient from pharmacy. Get it from the patient\'s labeled med bin.',
+ pom:'This is the patient\'s own medication from home, checked by pharmacy. Use the patient\'s own supply, stored where your unit\'s policy says.'
+};
+const Y='yesterday',T='today';
+const SCEN=[
+{pid:'a1',pr:['she','her'],brief:'She rates her back pain 5/10 and is asking for pain medicine.',dx:'CHF exacerbation',allergies:'Penicillins, Sulfa',ht:'162.6 cm',wt:'70.2 kg',code:'Full Code',
+ vit:{cols:['04:00','08:15'],rows:[['Temp (°C)','36.9','36.8'],['Heart rate','68','54',1],['BP','132/78','108/64'],['Resp','18','18'],['SpO₂','95% 2 L NC','95% 2 L NC'],['Pain (0–10)','2','5'],['Fingerstick glucose','—','212 mg/dL',1]]},
+ labs:[['05:00','Potassium','4.1 mmol/L',0],['05:00','Creatinine','1.1 mg/dL',0]],
+ notes:[['08:28','Reports low back pain 5/10 and is asking for pain medicine. Last oxycodone at 03:05.','RN'],['08:20','HR 54 and BP 108/64 on recheck. Asymptomatic, resting in bed.','RN'],['08:18','Current 0.9% NS bag has about 50 mL left. Next bag due 09:00.','RN'],['08:10','Removed 09:00 metoprolol from the cabinet before rechecking vitals.','You'],['07:45','Breakfast tray in room. Eating well.','PCA']],
+ meds:[
+  {id:'m1',gen:'FUROSEMIDE',brand:'LASIX',str:'20 mg (1 EA) TAB',dose:'20 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'matrix',hold:'Hold for SBP < 90',tray:'Furosemide 20 mg tab',lasa:'Torsemide 20 mg tab',instr:'MONITOR K+ AND DAILY WEIGHT'},
+  {id:'m2',gen:'HYDRALAZINE',brand:'APRESOLINE',str:'25 mg (1 EA) TAB',dose:'25 mg ORAL',freq:'THREE TIMES A DAY (09:00, 15:00, 21:00)',due:'09:00',cls:'pull',loc:'cubie',hold:'Hold for SBP < 100',tray:'Hydralazine 25 mg tab',lasa:'Hydroxyzine 25 mg tab',instr:'LOOK-ALIKE, SOUND-ALIKE: HYDROXYZINE'},
+  {id:'m3',gen:'OXYCODONE',brand:'ROXICODONE',str:'5 mg (1 EA) TAB',dose:'5 mg ORAL',freq:'Q4H PRN MODERATE PAIN (4-6)',due:'PRN',cls:'pull',loc:'locklid',tray:'Oxycodone IR 5 mg tab',lasa:'Oxycodone ER 10 mg tab',instr:'CONTROLLED SUBSTANCE. HIGH ALERT.',last:[T,'03:05','Marsh, Tara'],given:'03:05'},
+  {id:'m4',gen:'SODIUM CHLORIDE 0.9%',brand:'NORMAL SALINE',str:'1000 mL BAG',dose:'75 mL/hr IV',freq:'CONTINUOUS',due:'09:00',cls:'nl',src:'iv',instr:'NEXT BAG DUE 09:00',cont:1},
+  {id:'m5',gen:'FAMOTIDINE',brand:'PEPCID',str:'20 mg/2 mL VIAL',dose:'20 mg IV',freq:'EVERY 12 HOURS (09:00, 21:00)',due:'09:00',cls:'pull',loc:'fridge',tray:'Famotidine 20 mg/2 mL vial',lasa:'Famotidine 40 mg/4 mL vial',instr:'**REFRIGERATE**'},
+  {id:'m6',gen:'METOPROLOL TARTRATE',brand:'LOPRESSOR',str:'25 mg (1 EA) TAB',dose:'25 mg ORAL',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'pull',loc:'oral',refuse:1,hold:'Hold for HR < 60 or SBP < 100',instr:'HOLD FOR HR < 60 OR SBP < 100'},
+  {id:'m7',gen:'AMLODIPINE',brand:'NORVASC',str:'5 mg (1 EA) TAB',dose:'5 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'stockout'},
+  {id:'m8',gen:'FLUTICASONE',brand:'FLONASE',str:'50 mcg/SPRAY NASAL SPRAY',dose:'2 sprays EACH NOSTRIL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'nl',src:'nasal'},
+  {id:'m9',gen:'INSULIN GLARGINE',brand:'LANTUS SOLOSTAR',str:'100 units/mL PEN',dose:'18 units SUBQ',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'nl',src:'pen'},
+  {id:'m11',gen:'LATANOPROST',brand:'XALATAN',str:'0.005% OPHTH SOLN',dose:'1 drop BOTH EYES',freq:'AT BEDTIME (21:00)',due:'21:00',cls:'nl',src:'drops'},
+  {id:'m12',gen:'ATORVASTATIN',brand:'LIPITOR',str:'40 mg (1 EA) TAB',dose:'40 mg ORAL',freq:'AT BEDTIME (21:00)',due:'21:00',cls:'notdue'},
+  {id:'m13',gen:'ACETAMINOPHEN',brand:'TYLENOL',str:'325 mg (1 EA) TAB',dose:'650 mg ORAL',freq:'Q4H PRN MILD PAIN (1-3)',due:'PRN',cls:'prnNo',instr:'NOT TO EXCEED 4 GRAMS PER 24 HOURS',last:[Y,'22:40','Marsh, Tara'],given:'22:40 yesterday'},
+  {id:'m14',gen:'ONDANSETRON',brand:'ZOFRAN ODT',str:'4 mg (1 EA) ODT',dose:'4 mg ORAL',freq:'Q6H PRN NAUSEA',due:'PRN',cls:'prnNo'},
+  {id:'m15',gen:'LEVOTHYROXINE',brand:'SYNTHROID',str:'50 mcg (1 EA) TAB',dose:'50 mcg ORAL',freq:'ONCE A DAY BEFORE BREAKFAST (06:00)',due:'06:00',nextDay:1,gave:'06:00',cls:'notdue',instr:'GIVE ON AN EMPTY STOMACH'},
+  {id:'m16',gen:'GABAPENTIN',brand:'NEURONTIN',str:'300 mg (1 EA) CAP',dose:'300 mg ORAL',freq:'THREE TIMES A DAY (06:00, 14:00, 22:00)',due:'14:00',gave:'06:00',cls:'notdue'},
+  {id:'m17',gen:'SPIRONOLACTONE',brand:'ALDACTONE',str:'25 mg (1 EA) TAB',dose:'25 mg ORAL',freq:'ONCE A DAY (12:00)',due:'12:00',cls:'notdue',instr:'MONITOR K+'},
+  {id:'m18',gen:'ENOXAPARIN',brand:'LOVENOX',str:'40 mg/0.4 mL SYRINGE',dose:'40 mg SUBQ',freq:'ONCE A DAY (17:00)',due:'17:00',cls:'notdue',instr:'HIGH ALERT'},
+  {id:'m19',gen:'POTASSIUM CHLORIDE',brand:'K-DUR',str:'20 mEq (1 EA) ER TAB',dose:'20 mEq ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'oral',tray:'Potassium chloride 20 mEq ER tab',lasa:'Potassium chloride 10 mEq ER tab',instr:'DO NOT CRUSH'},
+  {id:'m20',gen:'POLYETHYLENE GLYCOL 3350',brand:'MIRALAX',str:'17 g (1 EA) PACKET',dose:'17 g ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'tower',tray:'Polyethylene glycol 17 g packet',lasa:'Psyllium 3.4 g packet',instr:'MIX IN 4-8 OZ OF FLUID'},
+  {id:'m21',gen:'ZINC OXIDE',brand:'DESITIN',str:'20% (4 g) BARRIER CREAM',dose:'1 application TOPICAL',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'nl',src:'top',instr:'APPLY TO SACRUM'},
+  {id:'m22',gen:'SUCRALFATE',brand:'CARAFATE',str:'1 g/10 mL (1 EA) SUSP CUP',dose:'1 g ORAL',freq:'FOUR TIMES A DAY (09:00, 13:00, 17:00, 21:00)',due:'09:00',cls:'pull',loc:'tower',tray:'Sucralfate 1 g/10 mL cup',lasa:'Simethicone drops 40 mg/0.6 mL',instr:'SEPARATE FROM OTHER MEDS BY 2 HOURS'},
+  ],
+ removed:[{mid:'m3',day:T,time:'03:05',by:'Marsh, Tara',qty:1,ret:0},{mid:'m13',day:Y,time:'22:40',by:'Marsh, Tara',qty:2,ret:0}]},
+{pid:'b1',pr:['he','his'],brief:'He rates his leg pain 8/10 and is asking for pain medicine.',dx:'Cellulitis, right lower leg',allergies:'Sulfa',ht:'178.0 cm',wt:'92.4 kg',code:'Full Code',
+ vit:{cols:['04:00','08:15'],rows:[['Temp (°C)','37.6','37.4'],['Heart rate','78','74'],['BP','124/72','128/76'],['Resp','18','18'],['SpO₂','97% RA','97% RA'],['Pain (0–10)','4','8'],['Fingerstick glucose','—','186 mg/dL',1]]},
+ labs:[['05:00','Potassium','5.4 mmol/L',1],['05:00','Creatinine','1.3 mg/dL',1],['05:00','WBC','13.2 K/µL',1]],
+ notes:[['08:28','Right lower leg pain 8/10. Asking for pain medicine. Last hydromorphone at 04:10.','RN'],['08:22','Brought docusate in and patient refused it. Reports two loose stools this morning.','You'],['08:18','LR bag nearly empty. Next bag due 09:00.','RN'],['08:05','Removed 09:00 lisinopril and docusate from the cabinet.','You'],['06:10','Flu vaccine consent signed and on chart. Vaccine ordered for 09:00.','RN']],
+ meds:[
+  {id:'m1',gen:'GLIPIZIDE',brand:'GLUCOTROL',str:'5 mg (1 EA) TAB',dose:'5 mg ORAL',freq:'ONCE A DAY WITH BREAKFAST (09:00)',due:'09:00',cls:'pull',loc:'matrix',tray:'Glipizide 5 mg tab',lasa:'Glyburide 5 mg tab',instr:'LOOK-ALIKE, SOUND-ALIKE: GLYBURIDE'},
+  {id:'m2',gen:'CARVEDILOL',brand:'COREG',str:'6.25 mg (1 EA) TAB',dose:'6.25 mg ORAL',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'pull',loc:'cubie',hold:'Hold for HR < 55 or SBP < 90',tray:'Carvedilol 6.25 mg tab',lasa:'Carvedilol 3.125 mg tab',instr:'GIVE WITH FOOD'},
+  {id:'m3',gen:'HYDROMORPHONE',brand:'DILAUDID',str:'2 mg (1 EA) TAB',dose:'2 mg ORAL',freq:'Q4H PRN SEVERE PAIN (7-10)',due:'PRN',cls:'pull',loc:'locklid',tray:'Hydromorphone 2 mg tab',lasa:'Morphine IR 15 mg tab',instr:'CONTROLLED SUBSTANCE. HIGH ALERT.',last:[T,'04:10','Marsh, Tara'],given:'04:10'},
+  {id:'m4',gen:"LACTATED RINGER'S",brand:'',str:'1000 mL BAG',dose:'100 mL/hr IV',freq:'CONTINUOUS',due:'09:00',cls:'nl',src:'iv',instr:'NEXT BAG DUE 09:00',cont:1},
+  {id:'m5',gen:'INFLUENZA VACCINE',brand:'FLUZONE',str:'0.5 mL SYRINGE',dose:'0.5 mL IM',freq:'ONCE',once:1,due:'ONCE',cls:'once',instr:'**REFRIGERATE** CONSENT ON CHART'},
+  {id:'m6',gen:'LISINOPRIL',brand:'ZESTRIL',str:'10 mg (1 EA) TAB',dose:'10 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'oral',refuse:1,hold:'Hold for K+ > 5.0 or SBP < 100',instr:'HOLD FOR K+ > 5.0 OR SBP < 100'},
+  {id:'m7',gen:'DOCUSATE',brand:'COLACE',str:'100 mg (1 EA) CAP',dose:'100 mg ORAL',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'pull',loc:'oral',refuse:1},
+  {id:'m8',gen:'ASPIRIN',brand:'',str:'81 mg (1 EA) CHEW TAB',dose:'81 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'stockout'},
+  {id:'m9',gen:'INSULIN ASPART',brand:'NOVOLOG FLEXPEN',str:'100 units/mL PEN',dose:'Per sliding scale SUBQ',freq:'BEFORE MEALS PER SLIDING SCALE (09:00, 13:00, 18:00)',due:'09:00',cls:'nl',src:'pen'},
+  {id:'m10',gen:'TIMOLOL',brand:'TIMOPTIC',str:'0.5% OPHTH SOLN',dose:'1 drop BOTH EYES',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'nl',src:'drops'},
+  {id:'m11',gen:'FINASTERIDE',brand:"PROSCAR - PATIENT'S OWN",str:'5 mg (1 EA) TAB',dose:'5 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'nl',src:'pom',pom:1},
+  {id:'m12',gen:'SODIUM CHLORIDE 0.65%',brand:'OCEAN',str:'NASAL SPRAY',dose:'1 spray EACH NOSTRIL',freq:'Q4H PRN NASAL DRYNESS',due:'PRN',cls:'nl',src:'nasal'},
+  {id:'m13',gen:'SENNA',brand:'SENOKOT',str:'8.6 mg (1 EA) TAB',dose:'17.2 mg ORAL',freq:'AT BEDTIME (21:00)',due:'21:00',cls:'notdue'},
+  {id:'m14',gen:'ACETAMINOPHEN',brand:'TYLENOL',str:'325 mg (1 EA) TAB',dose:'650 mg ORAL',freq:'Q4H PRN MILD PAIN (1-3)',due:'PRN',cls:'prnNo',instr:'NOT TO EXCEED 4 GRAMS PER 24 HOURS'},
+  {id:'m15',gen:'CEPHALEXIN',brand:'KEFLEX',str:'500 mg (1 EA) CAP',dose:'500 mg ORAL',freq:'EVERY 6 HOURS (06:00, 12:00, 18:00, 24:00)',due:'12:00',gave:'06:00',cls:'notdue'},
+  {id:'m16',gen:'PANTOPRAZOLE',brand:'PROTONIX',str:'40 mg (1 EA) DR TAB',dose:'40 mg ORAL',freq:'ONCE A DAY BEFORE BREAKFAST (06:00)',due:'06:00',nextDay:1,gave:'06:00',cls:'notdue'},
+  {id:'m17',gen:'ENOXAPARIN',brand:'LOVENOX',str:'40 mg/0.4 mL SYRINGE',dose:'40 mg SUBQ',freq:'ONCE A DAY (17:00)',due:'17:00',cls:'notdue',instr:'HIGH ALERT'},
+  {id:'m18',gen:'GABAPENTIN',brand:'NEURONTIN',str:'300 mg (1 EA) CAP',dose:'300 mg ORAL',freq:'AT BEDTIME (22:00)',due:'22:00',cls:'notdue'},
+  {id:'m19',gen:'MULTIVITAMIN',brand:'THERAGRAN',str:'1 (1 EA) TAB',dose:'1 tab ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'oral',tray:'Multivitamin tab',lasa:'Multivitamin with minerals tab'},
+  {id:'m20',gen:'CHLORHEXIDINE GLUCONATE 0.12%',brand:'PERIDEX',str:'15 mL (1 EA) ORAL RINSE',dose:'15 mL SWISH AND SPIT',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'pull',loc:'tower',tray:'Chlorhexidine 0.12% oral rinse 15 mL',lasa:'Lidocaine viscous 2% 15 mL cup',instr:'DO NOT SWALLOW'},
+  {id:'m21',gen:'MUPIROCIN',brand:'BACTROBAN',str:'2% (1 g) OINTMENT',dose:'1 application TOPICAL',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'nl',src:'top',instr:'APPLY TO RIGHT LOWER LEG WOUND'},
+  {id:'m22',gen:'FERROUS SULFATE',brand:'FER-IN-SOL',str:'300 mg/5 mL (1 EA) LIQUID CUP',dose:'300 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'tower',tray:'Ferrous sulfate 300 mg/5 mL cup',lasa:'Calcium carbonate 1,250 mg/5 mL cup',instr:'MAY STAIN TEETH. USE A STRAW'},
+  ],
+ removed:[{mid:'m3',day:T,time:'04:10',by:'Marsh, Tara',qty:1,ret:0}]},
+{pid:'c1',pr:['she','her'],brief:'She is anxious about her CT this morning and is asking for something to help her relax.',dx:'COPD exacerbation',allergies:'Codeine',ht:'157.5 cm',wt:'58.9 kg',code:'DNR',
+ vit:{cols:['04:00','08:15'],rows:[['Temp (°C)','37.1','37.0'],['Heart rate','92','88'],['BP','138/80','136/82'],['Resp','22','22'],['SpO₂','92% 2 L NC','92% 2 L NC'],['Pain (0–10)','2','2'],['Fingerstick glucose','—','168 mg/dL',1]]},
+ labs:[['05:00','Potassium','4.0 mmol/L',0],['05:00','Creatinine','0.9 mg/dL',0]],
+ notes:[['08:28','Anxious about her CT this morning. Asking for "something to calm my nerves." Last lorazepam at 22:30.','RN'],['08:18','IV bag nearly empty. Next D5 ½NS bag due 09:00.','RN'],['08:10','CT chest with IV contrast scheduled 11:00. Order received: hold metformin today.','RN'],['08:00','Removed 09:00 metformin from the cabinet.','You'],['06:00','Pneumococcal vaccine consent signed and on chart.','RN']],
+ meds:[
+  {id:'m1',gen:'PREDNISONE',brand:'DELTASONE',str:'20 mg (1 EA) TAB',dose:'20 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'matrix',tray:'Prednisone 20 mg tab',lasa:'Prednisone 5 mg tab',instr:'GIVE WITH FOOD'},
+  {id:'m2',gen:'SERTRALINE',brand:'ZOLOFT',str:'50 mg (1 EA) TAB',dose:'50 mg ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'cubie',tray:'Sertraline 50 mg tab',lasa:'Sertraline 100 mg tab'},
+  {id:'m3',gen:'LORAZEPAM',brand:'ATIVAN',str:'0.5 mg (1 EA) TAB',dose:'0.5 mg ORAL',freq:'Q6H PRN ANXIETY',due:'PRN',cls:'pull',loc:'locklid',tray:'Lorazepam 0.5 mg tab',lasa:'Alprazolam 0.5 mg tab',instr:'CONTROLLED SUBSTANCE. MONITOR RESPIRATORY STATUS.',last:[Y,'22:30','Marsh, Tara'],given:'22:30 yesterday'},
+  {id:'m4',gen:'DEXTROSE 5% - 0.45% NaCl',brand:'',str:'1000 mL BAG',dose:'75 mL/hr IV',freq:'CONTINUOUS',due:'09:00',cls:'nl',src:'iv',instr:'NEXT BAG DUE 09:00',cont:1},
+  {id:'m5',gen:'PNEUMOCOCCAL VACCINE',brand:'PNEUMOVAX 23',str:'0.5 mL VIAL',dose:'0.5 mL IM',freq:'ONCE',once:1,due:'ONCE',cls:'once',instr:'**REFRIGERATE** CONSENT ON CHART'},
+  {id:'m6',gen:'METFORMIN',brand:'GLUCOPHAGE',str:'500 mg (1 EA) TAB',dose:'500 mg ORAL',freq:'TWICE A DAY WITH MEALS (09:00, 17:00)',due:'09:00',cls:'pull',loc:'oral',refuse:1,hold:'Hold day of IV contrast study',instr:'HOLD DAY OF IV CONTRAST'},
+  {id:'m7',gen:'GUAIFENESIN',brand:'MUCINEX',str:'600 mg (1 EA) ER TAB',dose:'600 mg ORAL',freq:'TWICE A DAY (09:00, 21:00)',due:'09:00',cls:'stockout'},
+  {id:'m8',gen:'BRIMONIDINE',brand:'ALPHAGAN P',str:'0.1% OPHTH SOLN',dose:'1 drop BOTH EYES',freq:'THREE TIMES A DAY (09:00, 15:00, 21:00)',due:'09:00',cls:'nl',src:'drops'},
+  {id:'m10',gen:'INSULIN GLARGINE',brand:'BASAGLAR KWIKPEN',str:'100 units/mL PEN',dose:'12 units SUBQ',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'nl',src:'pen'},
+  {id:'m11',gen:'FLUTICASONE',brand:"FLONASE - PATIENT'S OWN",str:'50 mcg/SPRAY NASAL SPRAY',dose:'2 sprays EACH NOSTRIL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'nl',src:'pom',pom:1},
+  {id:'m12',gen:'MELATONIN',brand:'',str:'3 mg (1 EA) TAB',dose:'3 mg ORAL',freq:'AT BEDTIME (21:00)',due:'21:00',cls:'notdue'},
+  {id:'m13',gen:'ACETAMINOPHEN',brand:'TYLENOL',str:'325 mg (1 EA) TAB',dose:'650 mg ORAL',freq:'Q4H PRN MILD PAIN (1-3)',due:'PRN',cls:'prnNo',instr:'NOT TO EXCEED 4 GRAMS PER 24 HOURS'},
+  {id:'m14',gen:'PANTOPRAZOLE',brand:'PROTONIX',str:'40 mg (1 EA) DR TAB',dose:'40 mg ORAL',freq:'ONCE A DAY BEFORE BREAKFAST (06:00)',due:'06:00',nextDay:1,gave:'06:00',cls:'notdue'},
+  {id:'m15',gen:'AZITHROMYCIN',brand:'ZITHROMAX',str:'250 mg (1 EA) TAB',dose:'250 mg ORAL',freq:'ONCE A DAY (12:00)',due:'12:00',cls:'notdue'},
+  {id:'m16',gen:'ENOXAPARIN',brand:'LOVENOX',str:'40 mg/0.4 mL SYRINGE',dose:'40 mg SUBQ',freq:'ONCE A DAY (17:00)',due:'17:00',cls:'notdue',instr:'HIGH ALERT'},
+  {id:'m17',gen:'MONTELUKAST',brand:'SINGULAIR',str:'10 mg (1 EA) TAB',dose:'10 mg ORAL',freq:'ONCE A DAY IN THE EVENING (18:00)',due:'18:00',cls:'notdue'},
+  {id:'m19',gen:'CHOLECALCIFEROL',brand:'VITAMIN D3',str:'1,000 units (1 EA) TAB',dose:'1,000 units ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'oral',tray:'Cholecalciferol 1,000 units tab',lasa:'Cholecalciferol 2,000 units tab'},
+  {id:'m20',gen:'LACTULOSE',brand:'ENULOSE',str:'20 g/30 mL (1 EA) SOLN CUP',dose:'20 g ORAL',freq:'ONCE A DAY (09:00)',due:'09:00',cls:'pull',loc:'tower',tray:'Lactulose 20 g/30 mL cup',lasa:'Magnesium hydroxide 30 mL cup'},
+  {id:'m21',gen:'NYSTATIN',brand:'MYCOSTATIN',str:'100,000 units/mL (5 mL) SUSP CUP',dose:'500,000 units ORAL',freq:'FOUR TIMES A DAY (09:00, 13:00, 17:00, 21:00)',due:'09:00',cls:'pull',loc:'tower',tray:'Nystatin 100,000 units/mL oral susp 5 mL cup',lasa:'Nystatin powder 15 g',instr:'SWISH AND SWALLOW'},
+  ],
+ removed:[{mid:'m3',day:Y,time:'22:30',by:'Marsh, Tara',qty:1,ret:0}]}
+];
+const POOLS={
+ oral:['Acetaminophen 325 mg tab','Aspirin 81 mg chew tab','Senna 8.6 mg tab','Docusate 100 mg cap','Famotidine 20 mg tab','Amlodipine 5 mg tab','Lisinopril 10 mg tab','Furosemide 40 mg tab','Melatonin 3 mg tab','Magnesium oxide 400 mg tab','Simethicone 80 mg chew tab','Ondansetron 4 mg ODT','Metoprolol tartrate 25 mg tab','Gabapentin 300 mg cap','Tamsulosin 0.4 mg cap','Allopurinol 100 mg tab','Metformin 500 mg tab','Atorvastatin 40 mg tab','Pantoprazole 40 mg DR tab','Potassium chloride 20 mEq ER tab','Folic acid 1 mg tab','Levothyroxine 50 mcg tab','Montelukast 10 mg tab','Spironolactone 25 mg tab'],
+ ctrl:['Oxycodone IR 5 mg tab','Hydromorphone 2 mg tab','Lorazepam 0.5 mg tab','Morphine IR 15 mg tab','Tramadol 50 mg tab','Oxycodone/APAP 5/325 mg tab','Alprazolam 0.5 mg tab','Hydrocodone/APAP 5/325 mg tab','Oxycodone ER 10 mg tab','Clonazepam 0.5 mg tab'],
+ bulk:['Polyethylene glycol 17 g packet','Psyllium 3.4 g packet','Chlorhexidine 0.12% oral rinse 15 mL','Lidocaine viscous 2% 15 mL cup','Magnesium hydroxide 30 mL cup','Aluminum-magnesium hydroxide 30 mL cup','Lactulose 20 g/30 mL cup','Docusate liquid 100 mg/10 mL cup','Acetaminophen 650 mg/20.3 mL cup','Senna syrup 8.8 mg/5 mL cup','Potassium chloride 20 mEq/15 mL cup','Sodium chloride flush 10 mL','Sterile water for injection 10 mL','Glycerin suppository','Bisacodyl 10 mg suppository','Acetaminophen 650 mg suppository','Sodium phosphate enema 133 mL','Sucralfate 1 g/10 mL cup','Simethicone drops 40 mg/0.6 mL','Ondansetron 4 mg/5 mL oral cup','Heparin 5,000 units/0.5 mL syringe','Nystatin 100,000 units/mL oral susp 5 mL cup','Ferrous sulfate 300 mg/5 mL cup','Guaifenesin 100 mg/5 mL 10 mL cup','Diphenhydramine 12.5 mg/5 mL cup','Calcium carbonate 1,250 mg/5 mL cup','Loperamide 1 mg/7.5 mL cup','Metoclopramide 5 mg/5 mL cup','Prochlorperazine 25 mg suppository','Furosemide 10 mg/mL oral soln cup','Oral electrolyte solution 237 mL','Enoxaparin 40 mg/0.4 mL syringe','Sennosides-docusate liquid cup'],
+ fridge:['Famotidine 20 mg/2 mL vial','Famotidine 40 mg/4 mL vial','Influenza vaccine 0.5 mL syringe','Tdap vaccine 0.5 mL syringe','Pneumococcal vaccine 0.5 mL vial','Hepatitis B vaccine 1 mL vial','Epoetin alfa 10,000 units/mL vial','Filgrastim 300 mcg syringe','Tuberculin PPD 5 TU/0.1 mL vial','Lactobacillus capsules']
+};
+const TB=[1,5,10,14,17,18,20,22,24];
+const COMPS={
+ RB:{kind:'rbin',type:'return',title:'Return bin',sub:'Return bin'},
+ D1:{kind:'drawer',type:'matrix',n:12,cols:4,title:'Drawer 1',sub:'Matrix',pool:'oral'},
+ D2:{kind:'drawer',type:'cubie',n:12,cols:4,title:'Drawer 2',sub:'CUBIE',pool:'oral'},
+ D3:{kind:'drawer',type:'cubie',n:12,cols:4,title:'Drawer 3',sub:'CUBIE',pool:'oral'},
+ D4:{kind:'drawer',type:'locklid',n:6,cols:3,title:'Drawer 4',sub:'Lock-lid',pool:'ctrl'},
+ D5:{kind:'drawer',type:'matrix',n:8,cols:4,title:'Drawer 5',sub:'Matrix',pool:'oral'},
+ T1:{kind:'door',type:'tower',n:27,cols:3,title:'Tower door 1',pool:'bulk',fronts:TB},
+ T2:{kind:'door',type:'tower',n:27,cols:3,title:'Tower door 2',pool:'bulk',fronts:TB},
+ T3:{kind:'door',type:'tower',n:27,cols:3,title:'Tower door 3',pool:'bulk',fronts:TB},
+ FR:{kind:'door',type:'fridge',n:6,cols:3,title:'Refrigerator',pool:'fridge',nums:[1,2,3,4,5,6]}
+};
+const LOCS={oral:['D1','D2','D3','D5'],matrix:['D1','D5'],cubie:['D2','D3'],locklid:['D4'],tower:['T1','T2','T3'],fridge:['FR']};
+const ORDER=['D1','D2','D3','D4','D5','T1','T2','T3','FR'];
+const GEAR='<svg viewBox="0 0 24 24" fill="#1d5fd0"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.6 4.9-1.9-.3a6.9 6.9 0 0 1-.6 1.5l1.1 1.6-1.6 1.6-1.6-1.1c-.5.3-1 .5-1.5.6l-.3 1.9h-2.3l-.3-1.9a6.9 6.9 0 0 1-1.5-.6l-1.6 1.1-1.6-1.6 1.1-1.6a6.9 6.9 0 0 1-.6-1.5l-1.9-.3v-2.3l1.9-.3c.1-.5.3-1 .6-1.5L4.9 6.6l1.6-1.6 1.6 1.1c.5-.3 1-.5 1.5-.6l.3-1.9h2.3l.3 1.9c.5.1 1 .3 1.5.6l1.6-1.1 1.6 1.6-1.1 1.6c.3.5.5 1 .6 1.5l1.9.3z"/></svg>';
+const HOME='<svg viewBox="0 0 24 24" fill="#1d5fd0"><path d="M12 3 2 11h3v9h5v-6h4v6h5v-9h3z"/></svg>';
+const FP='<svg class="fp" viewBox="0 0 40 40" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M12 30c-2-3-3-6-3-10a11 11 0 0 1 22 0"/><path d="M16 33c-2-4-3-8-3-13a7 7 0 0 1 14 0c0 3-.5 5-1 7"/><path d="M20 20c0 5 1 9 3 13"/><path d="M31 24c0 3-1 6-2 8"/><path d="M8 14a14 14 0 0 1 24 0"/></svg>';
+
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s);
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+const NOW=new Date();
+const pad2=n=>String(n).padStart(2,'0');
+const dpad=d=>pad2(d.getMonth()+1)+'/'+pad2(d.getDate())+'/'+d.getFullYear();
+const TODAY=dpad(NOW),YEST=dpad(new Date(NOW.getTime()-864e5));
+const TMRW=(()=>{const d=new Date(NOW.getTime()+864e5);return d.toLocaleString('en-US',{month:'short'})+'-'+pad2(d.getDate());})();
+function age(dob){const [m,d,y]=dob.split('/').map(Number);let a=NOW.getFullYear()-y;if(NOW.getMonth()+1<m||(NOW.getMonth()+1===m&&NOW.getDate()<d))a--;return a;}
+function tc(s){return s.toLowerCase().replace(/(^|[\s(\-\/])([a-z])/g,(x,p,c)=>p+c.toUpperCase()).replace(/\bMl\b/g,'mL').replace(/\bNacl\b/g,'NaCl').replace(/'S\b/g,"'s");}
+const pat=id=>CENSUS.find(p=>p.id===id);
+const NAME_ALERT=new Set(['b1','b2']);
+const naTag=id=>NAME_ALERT.has(id)?'<span class="na" title="Another patient on this unit has a similar name">NAME ALERT</span>':'';
+const pxName=m=>m.gen+(m.brand?' ('+m.brand+')':'');
+const short=m=>m.tray||(tc(m.gen)+' '+m.str.replace(/\s*\(1 EA\)/,'').toLowerCase().replace(/\b(dr|er|odt)\b/g,x=>x.toUpperCase()).replace(/\bml\b/g,'mL'));
+function fmtTime(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+pad2(s%60);}
+function clock(){if(!S)return '08:30';const mins=30+Math.floor(((S.end||Date.now())-S.start)/60000);return pad2(8+Math.floor(mins/60))+':'+pad2(mins%60);}
+function sentence(s){s=s.toLowerCase();return (s.charAt(0).toUpperCase()+s.slice(1)).replace(/\bprn\b/g,'PRN').replace(/\bq(\d+)h\b/g,'q$1h');}
+function slotName(k,i){const d=COMPS[k];if(d.type==='tower')return 'Drawer '+d.fronts[tdrw(i)]+' · Pocket '+(i+1);if(d.kind==='door')return 'Bin '+d.nums[i];const rc=String.fromCharCode(65+Math.floor(i/d.cols))+((i%d.cols)+1);return (d.type==='matrix'?'Bin ':'Pocket ')+rc;}
+function slotShort(k,i){const d=COMPS[k];if(d.type==='tower')return String(i+1);if(d.kind==='door')return String(d.nums[i]);return String.fromCharCode(65+Math.floor(i/d.cols))+((i%d.cols)+1);}
+
+/* ================= state ================= */
+let S=null,toastTimer=null;
+function newRun(idx,mode){
+  mode=mode||(S?S.mode:'tutorial');
+  const scen=SCEN[idx];
+  const names=scen.meds.flatMap(m=>[m.tray,m.lasa].filter(Boolean));
+  const layout={};
+  for(const k of ORDER){const d=COMPS[k];const pool=shuffle(POOLS[d.pool].filter(x=>!names.includes(x)));
+    layout[k]={contents:pool.slice(0,d.n),qty:Array.from({length:d.n},()=>rint(3,9))};}
+  const place={},used=new Set();
+  const pick=a=>a[rint(0,a.length-1)];
+  const freeSlot=(comp,cands)=>{const c=cands.filter(i=>!used.has(comp+':'+i));return c.length?pick(c):-1;};
+  const all=n=>Array.from({length:n},(_,i)=>i);
+  const pm=scen.meds.filter(m=>m.cls==='pull').sort((a,b)=>(a.loc==='oral')-(b.loc==='oral'));
+  pm.forEach(m=>{
+    let comp;
+    if(m.loc==='oral'){const prev=pm.filter(x=>place[x.id]&&COMPS[place[x.id].comp].pool==='oral').map(x=>place[x.id].comp);comp=(prev.length&&Math.random()<0.7)?pick(prev):pick(LOCS.oral);}
+    else if(m.loc==='tower'){const prev=pm.filter(x=>place[x.id]&&COMPS[place[x.id].comp].type==='tower');comp=(prev.length&&Math.random()<0.8)?place[prev[0].id].comp:pick(LOCS.tower);
+      if(prev.length&&place[prev[0].id].comp===comp&&Math.random()<0.75){const [a,b]=tRange(tdrw(place[prev[0].id].slot));m._near=all(27).filter(i=>i+1>=a&&i+1<=b);}}
+    else comp=pick(LOCS[m.loc]);
+    const d=COMPS[comp];let slot=m._near?freeSlot(comp,m._near):-1;delete m._near;
+    if(slot<0&&d.type==='tower'){const deep=all(27).filter(i=>{const [x,y]=tRange(tdrw(i));return y-x>=3;});slot=freeSlot(comp,deep);}
+    if(slot<0)slot=freeSlot(comp,all(d.n));used.add(comp+':'+slot);layout[comp].contents[slot]=m.tray;
+    let ls=-1;
+    if(m.lasa){
+      if(d.type==='tower'){const [a,b]=tRange(tdrw(slot));ls=freeSlot(comp,all(d.n).filter(i=>i+1>=a&&i+1<=b));}
+      if(ls<0)ls=freeSlot(comp,all(d.n));
+      if(ls>=0){used.add(comp+':'+ls);layout[comp].contents[ls]=m.lasa;}
+    }
+    place[m.id]={comp,slot,lasaSlot:ls};
+  });
+  const pulls=scen.meds.filter(m=>m.cls==='pull').sort((a,b)=>ORDER.indexOf(place[a.id].comp)-ORDER.indexOf(place[b.id].comp));
+  S={mode,idx,scen,patient:pat(scen.pid),layout,place,pulls,returns:[],sess:[],bedside:false,rlist:buildRlist(scen,[]),
+     screen:'idle',userId:'',signedIn:false,my:['x1','x2'],added:false,selRow:null,apSel:null,search:'',tab:'due',picks:[],rpicks:[],
+     task:null,queue:[],qi:0,done:{},retDone:{},stockDone:{},nlSeen:{},dialog:null,errors:[],emrTab:'sched',sort:{k:'name',dir:1},
+     start:Date.now(),end:null,finished:false,toast:null};
+  $('#cab').innerHTML=cabHTML();
+  hideModal();render();
+}
+const med=id=>S.scen.meds.find(m=>m.id===id);
+
+/* ================= feedback ================= */
+function toast(kind,title,text){S.toast={kind,title,text:text||''};clearTimeout(toastTimer);toastTimer=setTimeout(()=>{S.toast=null;render();},kind==='err'?6500:3400);}
+function err(what,why){S.errors.push({what,why});toast('err',what,why);}
+const NA='That button is not used in this activity.';
+
+/* ================= actions ================= */
+function act(a,d){
+  if(S.finished&&!['again','new','mode','closeModal','startPractice','startTut','cert','print','closeCert','exit','restart','quizSubmit','quizRetake'].includes(a))return;
+  const busy=S.screen==='remove'||S.screen==='retseq';
+  switch(a){
+  case 'mode':
+    if(d.v===S.mode)break;
+    if(d.v==='practice'&&!TUT_DONE){toast('info','Finish the tutorial first.','Practice unlocks after you complete the tutorial.');break;}
+    if(d.v==='tutorial')startTut();else startPractice();return;
+  case 'startTut':startTut();return;
+  case 'startPractice':startPractice();return;
+  case 'again':newRun(S.idx);return;
+  case 'new':{if(S.mode==='tutorial'){toast('info','The tutorial uses one patient.','Switch to Practice for other patients.');break;}let i;do{i=rint(0,SCEN.length-1);}while(i===S.idx);newRun(i);return;}
+  case 'cert':if(S.quizPassed)showCert();else showQuiz(false);return;
+  case 'quizSubmit':quizSubmit();return;
+  case 'quizRetake':showQuiz(true);return;
+  case 'exit':exitSim();return;
+  case 'restart':$('#exitScreen').hidden=true;$('.app').hidden=false;startTut();return;
+  case 'closeCert':showResults();return;
+  case 'print':try{window.print();}catch(e){}return;
+  case 'closeModal':hideModal();render();return;
+  case 'emrTab':S.emrTab=d.v;break;
+  case 'touch':S.screen='signin';break;
+  case 'cancelSign':S.screen='idle';S.userId='';break;
+  case 'next':if(!S.userId.trim()){toast('info','Type a user ID first.','Your initials work.');break;}S.screen='bio';break;
+  case 'bio':
+    if(S.screen==='bio'){S.signedIn=true;S.screen='menu';toast('ok','Fingerprint accepted.');}
+    else if(!S.signedIn)toast('info','The reader is not ready.','Touch the screen and enter your user ID first.');
+    else toast('info','You are already signed in.');
+    break;
+  case 'gear':toast('info','Settings are not used in this activity.');break;
+  case 'na':toast('info',NA);break;
+  case 'home':if(busy){toast('info','Finish the current item first.');break;}S.screen='menu';S.dialog=null;break;
+  case 'go':
+    if(busy)break;
+    S.screen=d.v;S.search='';S.dialog=null;if(d.v==='allpts'||d.v==='edit')S.apSel=null;break;
+  case 'sort':S.sort=S.sort.k===d.k?{k:d.k,dir:-S.sort.dir}:{k:d.k,dir:1};break;
+  case 'selRow':S.selRow=d.id;break;
+  case 'dot':
+    S.selRow=d.id;
+    if(d.id!==S.patient.id){const p=pat(d.id);err('Opened orders for the wrong patient: '+p.last+', '+p.first+'.','My Patients holds other patients too. Check name and DOB against the EMR before you go on.');break;}
+    S.screen='profile';S.tab='all';S.picks=[];S.search='';break;
+  case 'editAdd':{
+    const p=pat(d.id);
+    if(S.my.includes(p.id)){toast('info',p.last+', '+p.first+' is already on My Patients.');break;}
+    S.my.push(p.id);
+    if(p.id!==S.patient.id)err('Added the wrong patient: '+p.last+', '+p.first+' (DOB '+p.dob+').','Match name plus date of birth or visit ID to the EMR banner. Tap the ✕ next to them to take them off your list.');
+    else{S.added=true;toast('ok','Added to My Patients.');}
+    break;}
+  case 'dropMy':S.my=S.my.filter(x=>x!==d.id);if(S.selRow===d.id)S.selRow=null;break;
+  case 'clearMy':S.my=[];S.selRow=null;break;
+  case 'clearR':S.rpicks=[];break;
+  case 'scan':scanItem();break;
+  case 'unable':unableScan();break;
+  case 'dropPt':{
+    if(!S.apSel){toast('info','Select a patient first.');break;}
+    const p=pat(S.apSel);
+    if(!S.my.includes(p.id)){toast('info',p.last+', '+p.first+' is not on My Patients.');break;}
+    S.my=S.my.filter(x=>x!==p.id);if(S.selRow===p.id)S.selRow=null;S.apSel=null;toast('ok','Removed from My Patients.');break;}
+  case 'apSel':S.apSel=d.id;break;
+  case 'addPt':{
+    if(!S.apSel){toast('info','Select a patient first.');break;}
+    const p=pat(S.apSel);
+    if(S.my.includes(p.id)){toast('info',p.last+', '+p.first+' is already on My Patients.');break;}
+    if(p.id!==S.patient.id){err('Added the wrong patient: '+p.last+', '+p.first+' (DOB '+p.dob+').','Match at least two identifiers to the EMR banner: name plus date of birth or visit ID. This unit has patients with similar names.');S.apSel=null;break;}
+    S.my.push(p.id);S.added=true;S.apSel=null;toast('ok','Added to My Patients.');break;}
+  case 'remove':case 'return':case 'past':{
+    if(!S.selRow){toast('info','Select a patient first.');break;}
+    if(S.selRow!==S.patient.id){const p=pat(S.selRow);err('Selected the wrong patient: '+p.last+', '+p.first+'.','My Patients holds other patients too. Check name and DOB against the EMR before you go on.');break;}
+    if(a==='remove'){S.screen='profile';S.tab='due';S.picks=[];S.search='';}
+    else if(a==='return'){S.screen='retlist';S.rpicks=[];S.search='';S.retStarted=true;}
+    else S.screen='past';
+    break;}
+  case 'tab':S.tab=d.v;break;
+  case 'pick':pickMed(d.id);break;
+  case 'clearPicks':S.picks=[];break;
+  case 'unpick':S.picks=S.picks.filter(x=>x!==d.id);break;
+  case 'removeMed':removeMed();break;
+  case 'cancelProfile':S.screen='summary';S.picks=[];break;
+  case 'dlgOpt':dlgOpt(+d.i);break;
+  case 'dlgOk':S.dialog=null;break;
+  case 'rpick':S.rpicks=S.rpicks.includes(d.k)?S.rpicks.filter(x=>x!==d.k):[...S.rpicks,d.k];break;
+  case 'returnMed':returnMed();break;
+  case 'backSummary':if(S.task&&!S.task.open&&!S.task.unlocking)S.task=null;if(S.task&&S.task.open){toast('info','Finish the current item first.');break;}S.screen='summary';S.search='';break;
+  case 'hw':hwClick(d.k);break;
+  case 'bin':binClick(+d.i);break;
+  case 'pocket':pocketClick(+d.i);break;
+  case 'take':take();break;
+  case 'accept':accept();break;
+  case 'pullDrw':pullDrw(+d.j);break;
+  case 'pushDrw':pushDrw();break;
+  case 'closeLid':closeLid();break;
+  case 'closeComp':closeComp();break;
+  case 'place':place();break;
+  case 'key':{const t=S.task;if(!t)break;const f=t.kind==='return'?'qtyValue':'countValue';if(d.v==='C')t[f]='';else if(t[f].length<2)t[f]+=d.v;break;}
+  case 'countOk':countOk();break;
+  case 'qtyOk':qtyOk();break;
+  case 'signout':signOut();return;
+  }
+  render();
+}
+function pickMed(id){
+  const m=med(id);
+  if(m.cls==='nl'){S.nlSeen[id]=true;S.dialog={type:'nl',mid:id};return;}
+  if(m.cls==='stockout'){S.dialog={type:'so',mid:id};return;}
+  if(m.cls==='once'){toast('info','One-time order, no set time.','It is not part of this pull.');return;}
+  S.picks=S.picks.includes(id)?S.picks.filter(x=>x!==id):[...S.picks,id];
+}
+function dlgOpt(i){
+  const g=S.dialog;if(!g)return;const o=g.opts[i];const m=med(g.mid);
+  if(o.ok){S.stockDone[g.mid]=true;S.dialog=null;toast('ok','Missing-dose request sent for '+short(m)+'.','Pharmacy will send it to the unit. Give it when it arrives.');}
+  else{err('Stockout handled wrong: "'+o.t+'".',o.why);S.dialog=null;}
+}
+function removeMed(){
+  if(!S.picks.length){toast('info','Tap the meds you need first.','Selected meds show in the right column.');return;}
+  const picked=S.picks.map(med);
+  const held=picked.filter(m=>m.cls==='held'),nd=picked.filter(m=>m.cls==='notdue'),pn=picked.filter(m=>m.cls==='prnNo');
+  const miss=S.pulls.filter(m=>!S.done[m.id]&&!S.picks.includes(m.id));
+  const doneAgain=picked.filter(m=>S.done[m.id]);
+  let bad=false;
+  held.forEach(m=>{bad=true;const r=S.scen.removed.find(x=>x.mid===m.id);err('Selected '+short(m)+', but '+m.holdWhy+'.',r?'You already removed that dose at '+r.time+'. It goes back through Return. Pulling another would double the removal.':'Check your assignment before you pull.');});
+  nd.forEach(m=>{bad=true;err('Selected '+short(m)+', which is not due until '+m.due+(m.nextDay?' tomorrow':'')+'.',(m.gave?'It was already given at '+m.gave+' today. ':'')+'Check the due time in the EMR. Pulling early leads to wrong-time errors and extra returns.');});
+  pn.forEach(m=>{bad=true;err('Selected '+short(m)+', a PRN nobody asked for.','Match the PRN to its indication (look at the PRN tab) and to what your assignment says the patient asked for.');});
+  doneAgain.forEach(m=>{bad=true;err('Selected '+short(m)+' again.','You already removed it this session. Pulling twice creates a discrepancy.');});
+  if(bad)return;
+  if(miss.length){err('Left off: '+miss.map(short).join(', ')+'.','Compare the EMR to the Med Profile line by line before you tap Remove Med. Check the Due Now and PRN tabs.');return;}
+  const sel=S.pulls.filter(m=>S.picks.includes(m.id));S.queue=[];ORDER.forEach(k=>{const ms=sel.filter(m=>S.place[m.id].comp===k).sort((a,b)=>S.place[a.id].slot-S.place[b.id].slot);if(ms.length)S.queue.push({comp:k,meds:ms});});S.qi=0;S.screen='remove';S.picks=[];startPull(S.queue[0]);
+}
+function tdrw(slot){const f=COMPS.T1.fronts,n=slot+1;let j=0;for(let i=0;i<f.length;i++)if(f[i]<=n)j=i;return j;}
+function tRange(j){const f=COMPS.T1.fronts;return [f[j],(j+1<f.length?f[j+1]-1:COMPS.T1.n)];}
+function setItem(t){const it=t.items[t.ii];t.med=it.med;t.slot=it.slot;t.lasaSlot=it.lasaSlot;t.taken=it.taken;}
+function allTaken(t){return t.items.every(it=>it.taken);}
+function popLid(t){setTimeout(()=>{if(S.task===t&&t.open&&!t.items[t.ii].taken){t.lid=true;render();}},700);}
+function startPull(g){
+  const t={kind:'pull',comp:g.comp,items:g.meds.map(m=>({med:m,slot:S.place[m.id].slot,lasaSlot:S.place[m.id].lasaSlot,taken:false})),ii:0,unlocking:true,open:false,lid:false,counted:false,prompt:'none',countValue:'',blindCount:rint(4,11),pulled:null,closed:false};
+  setItem(t);S.task=t;
+  setTimeout(()=>{if(S.task!==t)return;t.unlocking=false;t.open=true;render();if(COMPS[t.comp].type==='cubie')popLid(t);},1100);
+}
+function buildRlist(scen,sess){
+  const extra=scen.meds.filter(m=>m.gave).map(m=>({mid:m.id,day:T,time:'05:52',by:'Marsh, Tara',qty:1,ret:0}));
+  return [...sess,...scen.removed,...extra].sort((a,b)=>(a.day===b.day?b.time.localeCompare(a.time):(a.day===T?-1:1)));
+}
+function returnMed(){
+  if(!S.bedside){toast('info','Nothing to return yet.','Finish pulling, sign out, and give the meds at the bedside first.');return;}
+  if(!S.rpicks.length){toast('info','Select the dose to return first.','Selected meds show in the right column.');return;}
+  const wrong=S.rpicks.map(k=>S.rlist[+k]).filter(r=>!r.ret);
+  const miss=S.returns.filter(r=>!S.retDone[r.mid]&&!S.rpicks.includes(String(S.rlist.indexOf(r))));
+  if(wrong.length){wrong.forEach(r=>err('Tried to return '+short(med(r.mid))+' removed '+(r.day===T?'today':'yesterday')+' at '+r.time+'.','That dose was given. Returning something you are not holding creates a discrepancy. Only the refused dose goes back.'));return;}
+  if(miss.length){err('Left a dose off the return: '+miss.map(r=>short(med(r.mid))).join(', ')+'.','Return every dose you removed that the patient will not get.');return;}
+  S.queue=S.rpicks.map(k=>S.rlist[+k]);S.qi=0;S.done_r=0;S.screen='retseq';S.rpicks=[];startReturn(S.queue[0]);
+}
+function startReturn(r){const m=med(r.mid),p=S.place[r.mid];S.task={kind:'return',entry:r,med:m,comp:p.comp,slot:p.slot,lasaSlot:-1,items:[{med:m,slot:p.slot,lasaSlot:-1,taken:false}],ii:0,phase:'scan',qtyValue:'',unlocking:false,open:false,lid:false,counted:true,taken:false,prompt:'none',pulled:null,closed:false};}
+function openRB(){const t=S.task;t.phase='open';t.unlocking=true;setTimeout(()=>{if(S.task!==t)return;t.unlocking=false;t.open=true;render();if(COMPS[t.comp].type==='cubie')popLid(t);},1000);}
+function scanItem(){const t=S.task;if(!t||t.kind!=='return'||t.phase!=='scan')return;toast('ok','Barcode accepted.',short(t.med)+' matches the item being returned.');openRB();}
+function unableScan(){const t=S.task;if(!t||t.kind!=='return'||t.phase!=='scan')return;t.phase='qty';toast('info','Unable to scan.','Confirm the quantity you are returning by hand.');}
+function qtyOk(){
+  const t=S.task;if(!t||t.phase!=='qty')return;
+  if(t.qtyValue===''){toast('info','Enter the return quantity.');return;}
+  if(+t.qtyValue!==t.entry.qty){err('Entered return quantity '+t.qtyValue+' (you are holding '+t.entry.qty+').','The return quantity must match exactly what you are putting back, or the count will be off.');t.qtyValue='';return;}
+  openRB();
+}
+function place(){const t=S.task;if(!t||t.kind!=='return'||!t.open||t.taken)return;t.taken=true;startProcessing();}
+function hwClick(k){
+  const d=COMPS[k],t=S.task;
+  if(!t||t.closed){toast('info',d.title+' is locked.',S.signedIn?'Compartments unlock only after you choose meds and tap Remove Med (or Return Med).':'Sign in on the screen first.');return;}
+  if(k!==t.comp){err('Tried to open '+d.title+'. It is locked.','Only the compartment shown on the screen unlocks. Watch for the blinking light.');return;}
+  if(t.phase==='scan'||t.phase==='qty'){toast('info',t.phase==='scan'?'Scan the item first.':'Enter the quantity first.');return;}
+  if(t.unlocking){toast('info','Wait. It opens by itself.');return;}
+  if(t.open)closeComp();else if(t.prompt==='accept')toast('info','Press ACCEPT on the screen.');
+}
+function binClick(i){
+  const t=S.task;if(!t||!t.open)return;const d=COMPS[t.comp];const rt=t.kind==='return';
+  const other=t.items.find((it,j)=>it.slot===i&&j!==t.ii);
+  if(other&&other.taken){toast('info','You already removed that one.');return;}
+  if(t.taken){toast('info',rt?'You already put it back.':'You already removed this item.','Press ACCEPT on the screen.');return;}
+  if(i===t.slot){take();return;}
+  if(rt){err('Tried to put '+short(t.med)+' back in the wrong bin ('+slotShort(t.comp,i)+').','Returns go back to the exact pocket they came from: '+slotName(t.comp,t.slot)+'.');return;}
+  if(other){toast('info','That one is next.','Remove '+short(t.med)+' first.');return;}
+  const got=S.layout[t.comp].contents[i];
+  const where=(d.type==='tower'?'pocket ':'bin ')+slotShort(t.comp,i);
+  if(i===t.lasaSlot)err('Grabbed a look-alike from '+where+': '+got+'.','It sits near '+t.med.tray+'. Read the name, strength and form on the label every time.');
+  else err('Took from the wrong '+where+': '+got+'.',d.type==='tower'?'Pockets are numbered from the front of the drawer to the back. Your med is in '+slotName(t.comp,t.slot)+'.':'Match the location on the screen to the label before you reach in.');
+}
+function pocketClick(i){
+  const t=S.task;if(!t||!t.open)return;const d=COMPS[t.comp];
+  if(i!==t.slot){const other=t.items.find(it=>it.slot===i);if(other){toast('info',other.taken?'That pocket is finished.':'That pocket opens after this one.');return;}err('Tried to open locked pocket '+slotShort(t.comp,i)+'.','Only '+slotName(t.comp,t.slot)+' unlocks right now.');return;}
+  if(d.type==='cubie'&&!t.lid&&!t.taken){toast('info','Wait for the lid to pop open.');return;}
+  if(d.type==='locklid'&&!t.lid&&!t.taken){t.lid=true;return;}
+  if(t.taken&&!t.lid)toast('info','That pocket is finished.','Follow the screen.');
+}
+function take(){
+  const t=S.task;if(!t||t.taken)return;const d=COMPS[t.comp];
+  if(d.type==='locklid'&&!t.counted){toast('info','Enter the count on the screen first.');return;}
+  t.items[t.ii].taken=true;t.taken=true;
+  if(d.type==='matrix'||d.type==='fridge'||d.type==='tower')t.prompt='accept';
+}
+function reopen(t){t.open=false;t.unlocking=true;setTimeout(()=>{if(S.task!==t)return;t.unlocking=false;t.open=true;render();},1000);}
+function nextItem(){
+  const t=S.task;const d=COMPS[t.comp];
+  t.ii++;setItem(t);t.lid=false;t.prompt='none';t.counted=false;
+  toast('info','Next in this '+(d.kind==='drawer'?'drawer':'compartment')+': '+short(t.med)+'.',slotName(t.comp,t.slot)+'.');
+  if(d.type==='cubie')popLid(t);
+}
+function closeLid(){
+  const t=S.task;if(!t||!t.lid)return;
+  if(!t.taken){err('Closed the pocket lid before removing the med.','The pocket relocks and the cabinet logs a failed removal. You would have to start the pull over.');return;}
+  t.lid=false;
+  if(t.ii<t.items.length-1)nextItem();else startProcessing();
+}
+function accept(){
+  const t=S.task;if(!t||t.closed||!t.open)return;const d=COMPS[t.comp];
+  if(d.type==='cubie'||d.type==='locklid'){toast('info','No ACCEPT here.','Lidded pockets record it when you close the lid.');return;}
+  if(t.prompt!=='accept'){toast('info',t.kind==='return'?'Put the med back first.':'Remove the med first.');return;}
+  if(t.ii<t.items.length-1){nextItem();return;}
+  t.prompt='close';
+}
+function pullDrw(j){
+  const t=S.task;if(!t||!t.open||COMPS[t.comp].type!=='tower')return;
+  if(t.pulled!==null&&t.pulled!==j){toast('info','Push drawer '+COMPS[t.comp].fronts[t.pulled]+' back in first.');return;}
+  if(t.prompt==='accept'){toast('info','Press ACCEPT or push this drawer back in first.','Either one confirms the med.');return;}
+  t.pulled=j;
+}
+function pushDrw(){
+  const t=S.task;if(!t||t.pulled===null)return;
+  t.pulled=null;if(t.prompt==='accept')accept();
+}
+function startProcessing(){const t=S.task;t.prompt='processing';setTimeout(()=>{if(S.task===t&&t.prompt==='processing'){t.prompt='close';render();}},1800);}
+function closeComp(){
+  const t=S.task;if(!t||!t.open)return;const d=COMPS[t.comp];
+  if(d.type==='matrix'){
+    if(t.prompt==='accept'){err('Closed the drawer before pressing ACCEPT.','Press ACCEPT on the screen after you take each med. Close the drawer only after the last ACCEPT.');return;}
+    if(!allTaken(t)){err(t.kind==='return'?'Tried to close the drawer before putting the med back.':'Tried to close the drawer before taking '+(t.items.length>1?'all of your meds':'the med')+'.',t.kind==='return'?'Put it back in its original pocket first.':'Remove everything listed on the screen first.');return;}
+    if(t.prompt!=='close')return;
+    t.open=false;t.closed=true;finishTask();return;
+  }
+  if(d.type==='cubie'||d.type==='locklid'){
+    if(!allTaken(t)){err('Tried to close the drawer before taking '+(t.items.length>1?'all of your meds':'the med')+'.','Remove everything listed on the screen first.');return;}
+    if(t.lid){err('Pushed the drawer closed with the pocket lid open.','An open lid can jam the drawer and fail the pocket until pharmacy resets it. Close the lid first.');return;}
+    if(t.prompt!=='close'){err('Closed the drawer before CLOSE DRAWER appeared.','The cabinet is still recording the removal. Wait for the prompt.');return;}
+    t.open=false;t.closed=true;finishTask();return;
+  }
+  if(t.prompt==='accept'){err('Tried to close the door before '+(d.type==='tower'?'pressing ACCEPT or pushing the drawer back in.':'pressing ACCEPT.'),d.type==='tower'?'After each med, press ACCEPT or push the drawer back in. Either one confirms it.':'Press ACCEPT on the screen after each med you take.');return;}
+  if(t.pulled!==null){err('Tried to close the tower door with drawer '+d.fronts[t.pulled]+' still pulled out.','Push the drawer back in, then close the door.');return;}
+  if(!allTaken(t)){err('Tried to close the door before taking '+(t.items.length>1?'all of your meds':'the med')+'.','Remove everything listed on the screen first.');return;}
+  t.open=false;t.closed=true;finishTask();
+}
+function finishTask(){
+  const t=S.task;
+  if(t.kind==='return'){S.retDone[t.entry.mid]=true;advance();return;}
+  t.items.forEach(it=>{S.done[it.med.id]=true;S.sess.push({mid:it.med.id,day:T,time:clock(),by:'YOU',qty:1,ret:it.med.refuse?1:0});});
+  S.rlist=buildRlist(S.scen,S.sess);
+  advance();
+}
+function advance(){
+  const t=S.task;S.qi++;const nm=t.kind==='pull'?t.items.map(it=>short(it.med)).join(', '):short(t.med);
+  if(S.qi<S.queue.length){
+    toast('ok',(t.kind==='pull'?'Removed: ':'Returned: ')+nm+'.','Next item coming up.');
+    setTimeout(()=>{if(S.task!==t)return;if(t.kind==='pull')startPull(S.queue[S.qi]);else startReturn(S.queue[S.qi]);render();},900);
+  } else {
+    toast('ok',(t.kind==='pull'?'Removed: ':'Returned: ')+nm+'.');
+    S.screen=t.kind==='pull'?'pulldone':'retdone';
+    setTimeout(()=>{if(S.task===t){S.task=null;render();}},900);
+  }
+}
+function countOk(){
+  const t=S.task;if(!t)return;
+  if(t.countValue===''){toast('info','Type the count.');return;}
+  const v=+t.countValue;
+  if(v===t.blindCount){t.counted=true;toast('ok','Count accepted.','Take 1.');}
+  else if(v===t.blindCount-1){err('Entered the end quantity ('+v+') before removing the med.','The screen asked how many are in the pocket now ('+t.blindCount+'), before you take one. This is a common discrepancy reason.');t.countValue='';}
+  else{err('Count did not match (you entered '+v+'; the pocket had '+t.blindCount+').','A miscount creates a controlled-substance discrepancy that must be resolved before end of shift, with a witness. Count slowly.');t.countValue='';}
+}
+function signOut(){
+  if(!S.signedIn)return;
+  if(!S.bedside&&S.pulls.every(m=>S.done[m.id])&&!(S.task&&S.task.open)){
+    S.bedside=true;S.signedIn=false;S.screen='idle';S.task=null;S.selRow=null;S.userId='';
+    S.returns=S.sess.filter(x=>x.ret);
+    showBedside();render();return;
+  }
+  if(S.task&&S.task.open)err('Signed out with a compartment still open.','Never walk away from an open drawer or door.');
+  const missP=S.pulls.filter(m=>!S.done[m.id]),missR=S.returns.filter(r=>!S.retDone[r.mid]);
+  if(missP.length)err('Signed out without pulling: '+missP.map(short).join(', ')+'.','Those doses were due or requested.');
+  if(missR.length)err('Signed out without returning: '+missR.map(r=>short(med(r.mid))).join(', ')+'.','A dose left in your pocket is unaccounted for and becomes a discrepancy.');
+  S.finished=true;S.end=Date.now();S.signedIn=false;S.screen='idle';S.task=null;
+  render();showResults();
+}
+
+/* ================= render ================= */
+function render(){
+  const active=document.activeElement&&document.activeElement.id;
+  const keep={};['pxbody','pxl','pxr','emrbody'].forEach(id=>{const e=document.getElementById(id);if(e)keep[id]=e.scrollTop;});
+  $('#mG').setAttribute('aria-pressed',S.mode==='tutorial');$('#mP').setAttribute('aria-pressed',S.mode==='practice');$('#mP').classList.toggle('locked',!TUT_DONE);$('#mP').title=TUT_DONE?'':'Unlocks after the tutorial';
+  $('#errCount').textContent=S.errors.length;$('#errStat').classList.toggle('bad',S.errors.length>0);
+  const p=S.patient;
+  $('#assign').innerHTML='You are caring for <b>'+esc(tc(p.first)+' '+tc(p.last))+'</b>, DOB '+p.dob+', '+p.loc+'. It is about 08:30. Use the EMR to pull '+S.scen.pr[1]+' 09:00 meds and any PRN '+S.scen.pr[0]+' needs. '+esc(S.scen.brief)+' Hold parameters on the orders are for reference only, so pull every due dose.'+(S.bedside?' <b>At the bedside '+S.scen.pr[0]+' refused: '+S.returns.map(x=>esc(short(med(x.mid)))).join(', ')+'. Return '+(S.returns.length>1?'them':'it')+'.</b>':'');
+  const co=$('#coach');co.hidden=S.mode!=='tutorial';if(S.mode==='tutorial'){const st=tutStep();co.innerHTML='<div class="tut-top"><span class="lbl">Tutorial · Step '+st[0]+' of 13</span><span class="tut-bar"><i style="width:'+Math.round(st[0]/13*100)+'%"></i></span></div><div class="tut-t">'+st[1]+'</div><div class="tut-a">'+st[2]+'</div><div class="tut-c"><b>Do this:</b> '+coach()+'</div>';}
+  $('#emr').innerHTML=emrHTML();
+  $('#pxscr').innerHTML=pxHTML();
+  updateHW();
+  $('#work').innerHTML=workHTML();
+  spotlight();
+  for(const id in keep){const e=document.getElementById(id);if(e)e.scrollTop=keep[id];}
+  if(active){const el=document.getElementById(active);if(el&&el.tagName==='INPUT'){el.focus();try{const n=el.value.length;el.setSelectionRange(n,n);}catch(e){}}}
+}
+
+/* ---- EMR ---- */
+function emrHTML(){
+  const p=S.patient,sc=S.scen;
+  let h='<div class="emr-top"><b>EMR</b><span>2E-PCU · '+TODAY+'</span></div>'+
+   '<div class="emr-ban"><span class="nm">'+esc(p.last)+', '+esc(tc(p.first))+(p.mi?' '+p.mi:'')+'</span>'+
+   '<span class="ln">'+age(p.dob)+' y '+p.sex+' · DOB '+p.dob+' · Visit '+p.visit+'</span>'+
+   '<span class="ln">'+p.loc+' · '+sc.code+' · Wt '+sc.wt+'</span><span class="ln">Dx: '+esc(sc.dx)+'</span>'+
+   (NAME_ALERT.has(p.id)?'<span class="alg">Name alert: another patient on this unit has the same name</span>':'')+'<span class="alg">Allergies: '+esc(sc.allergies)+'</span></div>'+
+   '<div class="emr-tabs" role="tablist">'+[['unsched','Unscheduled'],['sched','Scheduled'],['iv','IV'],['group','Group'],['prn','PRN']].map(([k,l])=>'<button role="tab" aria-selected="'+(S.emrTab===k)+'" data-act="emrTab" data-v="'+k+'">'+l+'</button>').join('')+'</div><div class="emr-body" id="emrbody">';
+  if(['unsched','sched','iv','group','prn'].includes(S.emrTab)){
+    const ms=sc.meds.slice().sort((a,b)=>a.gen.localeCompare(b.gen)),NOWT='08:30',END='10:30';
+    const reg=ms.filter(m=>!m.cont&&!m.once);
+    const times=m=>{if(m.cont)return ['09:00'];const x=m.freq.match(/\(([^)]*\d\d:\d\d[^)]*)\)/);return x?x[1].split(/,\s*/):[];};
+    const nm=m=>tc(m.gen)+(m.brand?' ('+tc(m.brand.replace(" - PATIENT'S OWN",''))+')':'');
+    const st=(t,m)=>(m&&m.held&&t>=NOWT&&t<=END)?'<span class="chip heldc">'+t+' · '+m.held+'</span>':t<NOWT?'<span class="chip gave">Given '+t+'</span>':t<=END?'<span class="chip due">Due '+t+'</span>':'<span class="chip later">'+t+'</span>';
+    const row=(m,chip,full)=>'<div class="mar"><div><div class="n">'+esc(nm(m))+(m.pom?'<span class="pom">Pt own med</span>':'')+'</div><div class="s">'+esc(m.dose.replace(' ORAL',' PO').replace(' INHALED',' inhaled'))+' · '+esc(m.str.replace(/\s*\(1 EA\)/,''))+(m.cont?' · new bag':'')+'</div>'+
+        (full?'<div class="s">'+esc(sentence(m.freq))+'</div>':'')+(m.hold?'<div class="h">'+esc(m.hold)+'</div>':'')+(m.given?'<div class="s">Last given '+m.given+'</div>':'')+'</div><span class="chips">'+chip+'</span></div>';
+    const prn=ms.filter(m=>m.due==='PRN');
+    if(S.emrTab==='unsched'){
+      const un=ms.filter(m=>m.once);
+      h+='<div class="emr-now">Unscheduled · one-time orders</div>'+(un.map(m=>row(m,'<span class="chip prn">One time</span>',true)).join('')||'<div class="note">No unscheduled orders.</div>');
+    } else if(S.emrTab==='iv'){
+      const iv=ms.filter(m=>m.cont);
+      h+='<div class="emr-now">IV fluids · continuous infusions</div>'+(iv.map(m=>row(m,'<span class="chip due">New bag 09:00</span>',true)).join('')||'<div class="note">No IV fluids ordered.</div>');
+    } else if(S.emrTab==='prn'){
+      h+='<div class="emr-now">PRN orders · give only for the listed reason</div>'+prn.map(m=>row(m,'<span class="chip prn">PRN</span>',true)).join('');
+    } else if(S.emrTab==='sched'){
+      const slots={};reg.filter(m=>m.due!=='PRN').forEach(m=>times(m).forEach(t=>{(slots[t]=slots[t]||[]).push(m);}));
+      const keys=Object.keys(slots).sort();
+      h+='<div class="emr-now">Current time 08:30 · all scheduled meds, 00:00–24:00 today</div>'+keys.map(t=>'<div class="emr-sec emr-t'+(t>=NOWT&&t<=END?' now':'')+'">'+t+(t<NOWT?' · given':t<=END?' · due now':'')+'</div>'+slots[t].map(m=>row(m,st(t,m),false)).join('')).join('');
+    } else {
+      const due=reg.filter(m=>m.due!=='PRN'&&times(m).some(t=>t>=NOWT&&t<=END));
+      h+='<div class="emr-now">Group · meds due 08:30–10:30</div>'+due.map(m=>row(m,times(m).filter(t=>t>=NOWT&&t<=END).map(t=>st(t,m)).join(''),true)).join('');
+    }
+  } else if(S.emrTab==='vit'){
+    h+='<div class="emr-sec">Vital signs · today</div><table class="vt"><thead><tr><th></th>'+sc.vit.cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+
+      sc.vit.rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td'+(r[3]?' class="ab"':'')+'>'+r[2]+'</td></tr>').join('')+'</tbody></table>'+
+      '<div class="emr-sec">Labs · today</div><table class="vt"><tbody>'+sc.labs.map(l=>'<tr><td>'+l[0]+'</td><td>'+l[1]+'</td><td'+(l[3]?' class="ab"':'')+'>'+l[2]+(l[3]?' H':'')+'</td></tr>').join('')+'</tbody></table>';
+  } else {
+    h+='<div class="emr-sec">Nursing notes · today</div>'+sc.notes.map(n=>'<div class="note"><div class="t">'+n[0]+' · '+(n[2]==='You'?'You (student RN)':n[2])+'</div>'+esc(n[1])+'</div>').join('');
+  }
+  return h+'</div>';
+}
+
+/* ---- station screen ---- */
+const pb=(label,act,cls,extra)=>'<button class="pxb '+(cls||'')+'" data-act="'+act+'"'+(extra||'')+'>'+label+'</button>';
+function shell(title,body,foot,search){
+  const hdr=S.signedIn
+    ?'<div class="px-hdr"><button class="px-ib" data-act="gear" aria-label="Settings">'+GEAR+'</button><button class="px-ib" data-act="home" aria-label="Home">'+HOME+'</button><div class="px-user"><b>STUDENT, '+esc(S.userId.toUpperCase())+'</b><small>2E-PCU ('+clock()+') '+TODAY+'</small></div><button class="px-so" data-act="signout">Sign Out</button></div>'
+    :'<div class="px-hdr"><button class="px-ib" data-act="gear" aria-label="Settings">'+GEAR+'</button><div class="px-user"><small>2E-PCU ('+clock()+') '+TODAY+'</small></div></div>';
+  const tb='<div class="px-title"><h4>'+title+'</h4>'+(search?'<input class="px-search" id="pxsearch" data-input="search" placeholder="'+(search==='meds'?'Search Meds':'Last, First or ID')+'" autocomplete="off" value="'+esc(S.search)+'">':'')+'</div>';
+  return hdr+tb+'<div class="px-body" id="pxbody">'+body+'</div>'+(foot?'<div class="px-foot">'+foot+'</div>':'')+toastHTML()+dialogHTML();
+}
+function toastHTML(){return S.toast?'<div class="px-toast '+S.toast.kind+'" role="status"><b>'+esc(S.toast.title)+'</b>'+esc(S.toast.text)+'</div>':'';}
+function dialogHTML(){
+  const g=S.dialog;if(!g)return '';const m=med(g.mid);
+  const title=g.type==='nl'?'Not Loaded':'Out of Stock';
+  return '<div class="dlg-bg"><div class="dlg"><h6>'+title+'</h6><div class="b"><div class="n">'+esc(pxName(m))+'</div><div>'+esc(m.str)+'</div><div><b>'+title+'</b></div>'+pb('OK','dlgOk','lite')+'</div></div></div>';
+}
+function patBanner(){
+  const p=S.patient,sc=S.scen;
+  return '<div class="pban"><div class="nm">'+p.last+', '+p.first+' <span>('+p.visit+')</span>'+naTag(p.id)+'</div><div class="al"><i>!</i>Allergies: '+esc(sc.allergies)+'</div>'+
+   '<div class="ln">'+age(p.dob)+' y ('+p.dob+') '+p.sex+' &nbsp; Location: '+p.loc+' &nbsp; Status: Admitted &nbsp; Height: '+sc.ht+' &nbsp; Weight: '+sc.wt+'</div></div>';
+}
+function sortPts(list){
+  const k=S.sort.k,dir=S.sort.dir;
+  const key=p=>k==='visit'?+p.visit:k==='loc'?p.loc:(p.last+', '+p.first);
+  return list.slice().sort((a,b)=>{const x=key(a),y=key(b);return (x<y?-1:x>y?1:0)*dir;});
+}
+function colsHTML(){
+  const h=(k,l)=>'<button class="sorth'+(S.sort.k===k?' on':'')+'" data-act="sort" data-k="'+k+'" aria-label="Sort by '+l+'">'+(S.sort.k===k?(S.sort.dir>0?'⌃ ':'⌄ '):'')+l+'</button>';
+  return h('name','Name')+h('visit','Visit ID')+h('loc','Location');
+}
+function dotsFor(id){if(id===S.patient.id){const ms=S.scen.meds,d=['ALL'];['09','10','11','12'].forEach(h=>{if(ms.some(m=>m.due===h+':00'&&!m.nextDay))d.push(h);});if(ms.some(m=>m.due==='PRN'))d.push('PRN');return d;}return {x1:['09','12','PRN','ALL'],x2:['PRN','ALL'],x3:['10','PRN','ALL'],x4:['11','ALL']}[id]||['ALL'];}
+function pxHTML(){
+  switch(S.screen){
+  case 'idle':return '<button class="idle" data-act="touch"><span class="it"><span class="px-ib">'+GEAR+'</span>2E-PCU ('+clock()+') '+TODAY+'</span><span class="im"><span class="lg"><i></i>Medication Station</span><span class="ts">Touch Screen to Begin</span></span></button>';
+  case 'signin':return shell('Sign In','<div class="card-c" style="margin-top:60px"><h5>Enter your user ID</h5><label for="pxuid">User ID</label><input id="pxuid" data-input="uid" autocomplete="off" value="'+esc(S.userId)+'">'+pb('Next','next')+'</div>',pb('Cancel','cancelSign'));
+  case 'bio':return shell('Sign In','<div class="card-c" style="margin-top:50px"><h5>Place your finger on the BioID reader</h5>'+FP+'<div>User ID: '+esc(S.userId.toUpperCase())+'</div></div>',pb('Cancel','cancelSign'));
+  case 'menu':return shell('Main Menu','<div class="px-menu">Select Task to Start</div>',
+     pb('All Available Patients','go','',' data-v="allpts"')+pb('My Patients','go','',' data-v="summary"')+pb('Inventory Count','na')+pb('Discrepancies','na')+pb('Recover Storage Space','na')+pb('More ˄','na'));
+  case 'summary':{
+    const rows=sortPts(S.my.map(pat)).map(p=>{const dots=dotsFor(p.id);
+      return '<div class="ps-row ps-grid'+(S.selRow===p.id?' sel':'')+'" role="button" tabindex="0" data-act="selRow" data-id="'+p.id+'"><span class="ps-nm"><b>'+p.last+', '+p.first+(p.mi?' '+p.mi:'')+naTag(p.id)+'</b><small>'+age(p.dob)+' y ('+p.dob+') '+p.sex+'</small></span><span class="ps-v">'+p.visit+'</span><span class="ps-l">'+p.loc+'</span><span class="ps-ch">⌄</span>'+
+      ['09','10','11','12','PRN','ALL'].map(c=>'<span class="ps-dot">'+(dots.includes(c)?'<button class="ps-dotb" data-act="dot" data-id="'+p.id+'" aria-label="Open orders for '+p.last+'"><i></i></button>':'')+'</span>').join('')+'</div>';}).join('');
+    return shell('Patient Summary','<div class="ps-head"><span>Patients</span><span>‹ &nbsp;Today&nbsp; ›</span></div><div class="ps-grid ps-cols">'+colsHTML()+'<span></span><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span><span>PRN</span><span>All Orders</span></div><div class="ps-rows">'+rows+'</div>',
+      pb('Remove','remove')+pb('Past Removed','past')+pb('Waste','na')+pb('Return','return')+pb('Override','na')+'<span class="sp"></span>'+pb('All Available Patients','go','',' data-v="allpts"')+pb('Edit Patient List','go','',' data-v="edit"'),true);}
+  case 'edit':{
+    const q=S.search.trim().toLowerCase();
+    const list=sortPts(CENSUS.filter(p=>!q||(p.last+', '+p.first).toLowerCase().startsWith(q)||p.last.toLowerCase().startsWith(q)||p.visit.startsWith(q)));
+    const rows=list.map(p=>'<div class="ps-row el-row'+(S.my.includes(p.id)?' on':'')+'" role="button" tabindex="0" data-act="editAdd" data-id="'+p.id+'"><span class="ps-nm"><b>'+p.last+', '+p.first+(p.mi?' '+p.mi:'')+naTag(p.id)+'</b><small>'+age(p.dob)+' y ('+p.dob+') '+p.sex+'</small></span><span class="ps-v">'+p.visit+'</span><span class="ps-l">'+p.loc+'</span><span class="ps-ch">⌄</span></div>').join('');
+    const mine=S.my.map(pat).map(p=>'<div class="el-my"><span class="ps-nm"><b>'+p.last+', '+p.first+(p.mi?' '+p.mi:'')+naTag(p.id)+'</b><small>'+age(p.dob)+' y ('+p.dob+') '+p.sex+'</small></span><button class="el-x" data-act="dropMy" data-id="'+p.id+'" aria-label="Remove '+p.last+' from My Patients">✕</button></div>').join('');
+    return shell('Edit Patient List','<div class="el-top"><span>All Available Patients</span><span class="el-mp"><svg viewBox="0 0 24 24" width="20" height="20" fill="#1d5fd0"><circle cx="12" cy="8" r="4.5"/><path d="M3 21c0-5 4-7.5 9-7.5s9 2.5 9 7.5z"/></svg>My Patients</span></div>'+
+      '<div class="el-panes"><div class="el-l"><div class="el-cols">'+colsHTML()+'<span></span></div><div id="pxl" class="el-scroll">'+(rows||'<div class="empty">No match. Check the spelling.</div>')+'</div></div>'+
+      '<div class="el-r"><div class="el-cols r"><button class="mp-x" data-act="clearMy" aria-label="Clear My Patients">✕</button></div><div id="pxr" class="el-scroll">'+(mine||'<div class="empty">Tap a patient on the left to add them.</div>')+'</div></div></div>',
+      '<span class="sp"></span>'+pb('All Available Patients','go','',' data-v="allpts"')+pb('Add Temporary Patient','na')+pb('Accept','go','lite',' data-v="summary"'),true);}
+  case 'allpts':{
+    const ed=false;
+    const q=S.search.trim().toLowerCase();
+    const list=sortPts(CENSUS.filter(p=>!q||(p.last+', '+p.first).toLowerCase().startsWith(q)||p.last.toLowerCase().startsWith(q)||p.visit.startsWith(q)));
+    const rows=list.map(p=>'<button class="ps-row ap-grid'+(S.apSel===p.id?' sel':'')+'" data-act="apSel" data-id="'+p.id+'"><span class="ps-nm"><b>'+p.last+', '+p.first+(p.mi?' '+p.mi:'')+naTag(p.id)+'</b><small>'+age(p.dob)+' y ('+p.dob+') '+p.sex+'</small></span><span class="ps-v">'+p.visit+'</span><span class="ps-l">'+p.loc+'</span><span class="ap-on">'+(S.my.includes(p.id)?'✓ My list':'')+'</span></button>').join('');
+    return shell(ed?'Edit Patient List':'All Available Patients','<div class="ps-head"><span>'+(ed?'Select a patient to add to or remove from your list':'All patients on 2E-PCU')+'</span><span></span></div><div class="ap-grid ps-cols">'+colsHTML()+'<span></span></div><div class="ps-rows">'+(rows||'<div class="empty">No match. Check the spelling.</div>')+'</div>',
+      pb('Add to My Patients','addPt','lite')+(ed?pb('Remove from My Patients','dropPt'):'')+'<span class="sp"></span>'+pb(ed?'Done':'My Patients','go','',' data-v="summary"'),true);}
+  case 'profile':return profileHTML();
+  case 'remove':return shell('Remove',removeBody(),'');
+  case 'pulldone':return shell('Remove','<div class="card-c" style="margin-top:40px"><h5>Removal complete</h5><div>'+S.queue.flatMap(g=>g.meds).map(m=>'✓ '+esc(short(m))).join('<br>')+'</div><div>Take them to the bedside. Scan the wristband and each med before you give it.</div>'+pb('Done','backSummary','lite')+'</div>','');
+  case 'retlist':case 'past':{
+    const ro=S.screen==='past';
+    const q=S.search.trim().toLowerCase();
+    const line=r=>{const m=med(r.mid);return esc(m.str)+' &nbsp; Removed: '+r.qty+' EA '+(r.day===T?TODAY:YEST)+' '+r.time+(S.retDone[r.mid]&&r.ret?' · <b>Returned</b>':'');};
+    const items=S.rlist.map((r,i)=>({r,i})).filter(({i})=>ro||!S.rpicks.includes(String(i))).filter(({r})=>!q||(med(r.mid).gen+' '+med(r.mid).brand).toLowerCase().includes(q)).map(({r,i})=>{const m=med(r.mid);const k=String(i);const sel=S.rpicks.includes(k);
+      return '<button class="mc'+(sel?' sel':'')+'"'+(ro?' disabled':' data-act="rpick" data-k="'+k+'"')+'><span><div class="n">'+esc(pxName(m))+'</div><div class="s">'+line(r)+'</div></span><span class="due">⌄</span></button>';}).join('');
+    const sel=S.rpicks.map(k=>S.rlist[+k]).map((r,j)=>'<div class="sel-row"><span><b>'+esc(pxName(med(r.mid)))+'</b><br>'+esc(med(r.mid).str)+'</span><span>'+r.time+'</span><button class="el-x" data-act="rpick" data-k="'+S.rpicks[j]+'" aria-label="Take '+esc(pxName(med(r.mid)))+' off the return list">✕</button></div>').join('');
+    const body=patBanner()+(ro?'<div class="mp" style="grid-template-columns:1fr;height:calc(100% - 50px)"><div class="mp-l" id="pxl"><div class="mp-hd"><span>Name/Dose · removed in the last 24 hours</span><span></span></div>'+items+'</div></div>'
+      :'<div class="mp" style="height:calc(100% - 50px)"><div class="mp-l" id="pxl"><div class="mp-hd"><span>Name/Dose</span><span></span></div>'+(items||'<div class="empty">No meds match.</div>')+'</div><div class="mp-r" id="pxr"><div class="mp-hd"><span>Name/Dose</span><button class="mp-x" data-act="clearR" aria-label="Clear selected">✕</button></div>'+(sel||'<div class="empty">Tap the dose you are returning. Tap ✕ to put it back.</div>')+'</div></div>');
+    return ro?shell('Past Removed',body,pb('Back','backSummary','lite')):shell('Meds to Return',body,'<span class="sp"></span>'+pb('Search All Meds','na')+'<span class="sp"></span>'+pb('Cancel','backSummary','lite')+pb('Return','returnMed','lite'),'meds');}
+  case 'retseq':return shell('Return',returnBody(),S.task&&!S.task.closed&&(S.task.phase==='scan'||S.task.phase==='qty')?'<span class="sp"></span>'+pb('Cancel','backSummary','lite')+(S.task.phase==='scan'?pb('Unable To Scan','unable','lite'):''):'');
+  case 'retdone':return shell('Return','<div class="card-c" style="margin-top:40px"><h5>Return complete</h5><div>'+S.queue.map(r=>'✓ '+esc(short(med(r.mid)))).join('<br>')+'</div><div>Pharmacy picks up items from the return bin.</div>'+pb('Done','backSummary','lite')+'</div>','');
+  }
+  return '';
+}
+function profileHTML(){
+  const ms=S.scen.meds;
+  const byGen=(a,b)=>a.gen.localeCompare(b.gen);const px=ms.filter(m=>!m.cont).sort(byGen);
+  const due=px.filter(m=>m.due==='09:00'),prn=px.filter(m=>m.due==='PRN');
+  let list=S.tab==='due'?due:S.tab==='prn'?prn:px;
+  list=list.filter(m=>!S.picks.includes(m.id));
+  const q=S.search.trim().toLowerCase();if(q)list=list.filter(m=>(m.gen+' '+m.brand).toLowerCase().includes(q));
+  const card=m=>{
+    const sel=S.picks.includes(m.id);const nl=m.cls==='nl';const gray=nl||m.cls==='stockout';
+    const last=nl?'':m.gave?'Last Removed: '+m.str.replace(/\s*\(1 EA\)/,'')+' '+TODAY+' 05:52 Marsh, Tara':m.last?'Last Removed: '+m.str.replace(/\s*\(1 EA\)/,'')+' '+(m.last[0]===T?TODAY:YEST)+' '+m.last[1]+' '+(m.last[2]==='YOU'?'STUDENT, '+S.userId.toUpperCase():m.last[2]):(m.due==='PRN'||m.once||m.cls==='stockout'?'':'Last Removed: '+YEST+' '+(m.due==='21:00'?'21:04':'08:52')+' Marsh, Tara');
+    return '<button class="mc'+(sel?' sel':'')+(gray?' nl':'')+'" data-act="pick" data-id="'+m.id+'"><span><div class="n">'+esc(pxName(m))+'</div><div class="s">'+esc(m.str)+'</div><div class="d">Dose: <b>'+esc(m.dose)+'</b> &nbsp;Frequency: <b>'+esc(m.freq)+'</b></div>'+
+      (last?'<div class="r">'+esc(last)+'</div>':'')+(m.instr?'<div class="i">Dispensing Instructions: '+esc(m.instr)+'</div>':'')+
+      (S.done[m.id]?'<span class="tag nl">REMOVED THIS SESSION</span>':'')+
+      '</span><span class="due'+(m.due==='PRN'?' prn':m.once?' once':'')+'">'+m.due+(m.nextDay?'<small>'+TMRW+'</small>':'')+'</span></button>';};
+  const sel=S.picks.map(med).map(m=>'<div class="sel-row"><span><b>'+esc(pxName(m))+'</b><br>'+esc(m.dose)+'</span><span>'+m.due+'</span><button class="el-x" data-act="unpick" data-id="'+m.id+'" aria-label="Remove '+esc(pxName(m))+' from the remove list">✕</button></div>').join('');
+  const body=patBanner()+'<div class="mp-tabs" role="tablist"><button role="tab" aria-selected="'+(S.tab==='due')+'" data-act="tab" data-v="due">Due Now ('+due.length+')</button><button role="tab" aria-selected="'+(S.tab==='prn')+'" data-act="tab" data-v="prn">PRN ('+prn.length+')</button><button role="tab" aria-selected="'+(S.tab==='all')+'" data-act="tab" data-v="all">All Orders</button></div>'+
+   '<div class="mp"><div class="mp-l" id="pxl"><div class="mp-hd"><span>Name/Dose</span><span>Due</span></div>'+(list.map(card).join('')||'<div class="empty">No orders match.</div>')+'</div>'+
+   '<div class="mp-r" id="pxr"><div class="mp-hd"><span>Name/Dose</span><span style="display:flex;gap:8px;align-items:center">Due <button class="mp-x" data-act="clearPicks" aria-label="Clear selected">✕</button></span></div>'+(sel||'<div class="empty">Tap a med to move it here. Tap ✕ to put it back.</div>')+'</div></div>';
+  return shell('Med Profile',body,pb('Past Removed','past')+pb('Override','na')+pb('System Kits','na')+'<span class="sp"></span>'+pb('Cancel','cancelProfile','lite')+pb('Remove Med','removeMed','lite'),true);
+}
+function mapHTML(k,slot){
+  const d=COMPS[k];if(d.kind==='rbin')return '<div class="map" style="--cols:1"><div class="hit">RETURN BIN</div></div>';
+  if(d.type==='tower'){const f=d.fronts,j0=tdrw(slot);let h='<div class="map" style="--cols:3">';f.forEach((n,j)=>{h+='<div class="'+(j===j0?'hit':'')+'">'+n+'</div>';});return h+'</div><div class="rm-c">Drawer fronts. Pocket '+(slot+1)+' is in drawer '+f[j0]+'.</div>';}
+  let h='<div class="map" style="--cols:'+d.cols+'">';for(let i=0;i<d.n;i++)h+='<div class="'+(i===slot?'hit':'')+'">'+slotShort(k,i)+'</div>';return h+'</div>';
+}
+function removeBody(){
+  const t=S.task;
+  if(!t)return '<div class="rm"><div class="rm-bar done">Closing…</div></div>';
+  const m=t.med,d=COMPS[t.comp],rt=t.kind==='return',V=rt?'RETURN 1':'REMOVE 1';
+  const loc=(d.kind==='drawer'?'Main · ':'')+d.title+' · <b>'+slotName(t.comp,t.slot)+'</b>';
+  let bar,cls='';
+  if(t.closed){bar=d.kind==='drawer'?'DRAWER CLOSED ✓':'DOOR CLOSED ✓';cls='done';}
+  else if(t.unlocking){bar=(d.type==='fridge'?'REFRIGERATOR':d.title.toUpperCase())+' OPENING…';}
+  else if(t.prompt==='processing'){bar='UPDATING… PLEASE WAIT';cls='wait';}
+  else if(t.prompt==='close'){bar=d.kind==='drawer'?'CLOSE DRAWER':'CLOSE DOOR';cls='close';}
+  else if(t.prompt==='push'){bar=d.type==='tower'?'PUSH DRAWER '+d.fronts[t.pulled]+' BACK IN':'PUSH DRAWER CLOSED';cls='close';}
+  else if(d.type==='locklid'){bar=!t.lid&&!t.taken?'LIFT LID · '+slotName(t.comp,t.slot).toUpperCase():!t.counted?'ENTER COUNT':!t.taken?V:'CLOSE LID';}
+  else if(d.type==='cubie'){bar=!t.lid&&!t.taken?'POCKET OPENING…':!t.taken?V+' · '+slotName(t.comp,t.slot).toUpperCase():'CLOSE POCKET LID';}
+  else if(d.type==='tower'){bar=t.pulled===null?'PULL OUT DRAWER '+d.fronts[tdrw(t.slot)]:V+' · POCKET '+(t.slot+1);}
+  else bar=V+' · '+slotName(t.comp,t.slot).toUpperCase();
+  const more=t.ii<t.items.length-1;
+  const acc=(t.prompt==='accept'&&!t.closed)?'<button class="rm-acc" data-act="accept">ACCEPT</button><div class="rm-c" style="text-align:center;margin-top:-4px">'+(rt?'Confirm the return, then close the drawer.':(d.type==='tower'?'Press ACCEPT or push the drawer back in. Either one confirms this med. ':'')+(more?'The screen then shows your next med.':'Then close the '+(d.kind==='drawer'?'drawer.':'door.')))+'</div>':'';
+  const list=t.items.length>1?'<div class="rm-list"><b>'+t.items.length+' meds in this '+(d.kind==='drawer'?'drawer':'compartment')+'</b>'+t.items.map((it,j)=>'<div class="'+(j===t.ii&&!it.taken?'now':'')+'">'+(it.taken?'✓':(j===t.ii?'▸':'•'))+' '+esc(short(it.med))+' · '+slotName(t.comp,it.slot)+'</div>').join('')+'</div>':'';
+  const cnt=(d.type==='locklid'&&t.lid&&!t.counted&&!t.closed)?'<div class="cnt"><label for="pxcount"><b>Count before removing.</b> How many are in the pocket right now, before you take any?<input id="pxcount" data-input="count" inputmode="numeric" autocomplete="off" value="'+esc(t.countValue)+'"></label><div class="kp">'+['1','2','3','4','5','6','7','8','9','C','0'].map(k=>'<button data-act="key" data-v="'+k+'">'+k+'</button>').join('')+'<button class="ok" data-act="countOk">Accept</button></div></div>':'';
+  return '<div class="rm">'+'<div class="pban" style="border-radius:4px"><div class="nm">'+S.patient.last+', '+S.patient.first+' <span>('+S.patient.visit+')</span></div><div class="ln">'+S.patient.loc+'</div></div>'+
+   '<div class="rm-wrap"><div class="rm-map"><div class="t">'+d.title+(d.kind==='drawer'?' · '+d.sub:'')+'</div>'+mapHTML(t.comp,t.slot)+'</div><div><div class="rm-n">'+esc(pxName(m))+'</div><div class="rm-s">'+esc(m.str)+'</div><div class="rm-q">'+(rt?'Return':'Remove')+': <b>1 EA</b> &nbsp;·&nbsp; Dose: '+esc(m.dose)+'</div><div class="rm-loc">'+loc+'</div><div class="rm-c">Stop '+(S.qi+1)+' of '+S.queue.length+(d.type==='locklid'?' · Controlled substance':'')+'</div></div></div>'+
+   list+cnt+(acc||'<div class="rm-bar '+cls+'">'+bar+'</div>')+'</div>';
+}
+function returnBody(){
+  const t=S.task;
+  if(t&&!t.closed&&t.phase==='open')return removeBody();
+  const cur=t?t.entry:null;
+  const left=S.queue.map((r,j)=>'<div class="rq'+(r===cur&&!(t&&t.closed&&j===S.queue.length-1)?' on':'')+'"><span class="ar">›</span><span><b>'+esc(pxName(med(r.mid)))+'</b><br>'+r.qty+' EA ('+esc(med(r.mid).str)+')'+(S.retDone[r.mid]?' ✓':'')+'</span></div>').join('');
+  let big,cls='';
+  const n=S.qi+1;
+  if(!t||t.closed){big='Return complete ✓';cls='done';}
+  else if(t.phase==='scan')big='Scan Item to Return (#'+n+')';
+  else if(t.phase==='qty')big='Enter Quantity to Return (#'+n+')';
+  else if(t.unlocking)big='Return Bin Opening…';
+  else if(t.prompt==='processing'){big='Updating… Please Wait';cls='wait';}
+  else if(t.prompt==='close'){big='Close Return Bin';cls='close';}
+  else big='Place Item in Return Bin (#'+n+')';
+  const qty=t&&t.phase==='qty'?'<div class="cnt" style="margin-top:10px;color:var(--px-navy)"><label for="pxretq"><b>Return quantity.</b> How many are you putting back?<input id="pxretq" data-input="retq" inputmode="numeric" autocomplete="off" value="'+esc(t.qtyValue)+'"></label><div class="kp">'+['1','2','3','4','5','6','7','8','9','C','0'].map(k=>'<button data-act="key" data-v="'+k+'">'+k+'</button>').join('')+'<button class="ok" data-act="qtyOk">Accept</button></div></div>':'';
+  const doneCount=S.queue.filter(r=>S.retDone[r.mid]).length;
+  const m=t?t.med:med(S.queue[S.queue.length-1].mid),e=t?t.entry:S.queue[S.queue.length-1];
+  return patBanner()+'<div class="rs"><div class="rs-l">'+left+'</div><div class="rs-r"><div class="rs-hd">'+esc(pxName(m))+' '+e.qty+' EA<br>Removed: '+(e.day===T?TODAY:YEST)+' '+e.time+'</div><div class="rs-p '+cls+'"><div class="rs-big">'+big+'</div>'+qty+'<div class="rs-c">Completed Items: '+doneCount+'</div></div></div></div>';
+}
+
+/* ---- hardware ---- */
+function cabHTML(){
+  const drawer=k=>{const d=COMPS[k];let cells='';for(let i=0;i<d.n;i++)cells+='<i data-cell="'+i+'"></i>';
+    return '<div class="drw h-'+k+'" id="hw-'+k+'"><div class="tray"><div class="tg '+d.type+'" style="--cols:'+d.cols+'">'+cells+'</div></div><button class="front h-'+k+'" data-act="hw" data-k="'+k+'" aria-label="'+d.title+'"><span class="dn">'+k.slice(1)+'</span><span class="dt">'+d.sub+'</span><span class="handle"></span><span class="led"></span></button></div>';};
+  const door=k=>{const d=COMPS[k];const lab=d.fronts||d.nums;let cells='';for(let i=0;i<lab.length;i++)cells+='<span class="b" data-cell="'+i+'">'+lab[i]+'</span>';
+    return '<div class="dw '+(k==='FR'?'fr h-FR':'h-T')+'" id="hw-'+k+'"><div class="inside" style="--cols:'+d.cols+'">'+cells+'</div><button class="leaf" data-act="hw" data-k="'+k+'" aria-label="'+d.title+'"><span class="row"><span class="dn">'+(k==='FR'?'Fridge':'Door '+k.slice(1))+'</span><span class="led"></span></span><span class="vh"></span><span class="st">Locked</span></button></div>';};
+  return '<div class="unit"><div class="cap">Main</div>'+['D1','D2','D3','D4','D5'].map(drawer).join('')+'</div>'+
+    '<div class="unit"><div class="cap">Tower</div>'+['T1','T2','T3'].map(door).join('')+'</div>'+
+    '<div class="unit"><div class="cap">Fridge <span class="temp">4.2 °C</span></div>'+door('FR')+'</div>';
+}
+function updateHW(){
+  const t=S.task;const ak=t&&!t.closed?t.comp:null;
+  for(const k of Object.keys(COMPS)){
+    const el=document.getElementById('hw-'+k);if(!el)continue;
+    const isA=k===ak;const open=isA&&t.open;
+    el.classList.toggle('open',!!open);
+    const led=el.querySelector('.led');if(led)led.className='led'+(isA?(t.open?' steady':(t.unlocking?' blink':'')):'');
+    const st=el.querySelector('.st');if(st)st.textContent=open?'Open':(isA&&t.unlocking?'Unlocking':'Locked');
+    const hi=isA?(COMPS[k].type==='tower'?tdrw(t.slot):t.slot):-1;el.querySelectorAll('[data-cell]').forEach(c=>c.classList.toggle('hit',+c.dataset.cell===hi));
+  }
+  $('#bioid').classList.toggle('ready',S.screen==='bio');
+}
+function pills(n,big){let s='';for(let i=0;i<n;i++)s+='<span class="pill'+(big?' big':'')+'"></span>';return '<span class="pills" aria-label="'+n+' in pocket">'+s+'</span>';}
+function workHTML(){
+  const t=S.task;
+  const idle=msg=>'<div class="wk-hd"><h3>Work surface</h3><span class="wchip">Nothing open</span></div><div class="idle-ws">'+msg+'</div>';
+  if(!t||t.closed)return idle('When a drawer or door opens, you will see inside it here.');
+  if(t.phase==='qty')return idle('Enter the return quantity on the screen. The drawer it came from opens after that.');
+  if(t.phase==='scan')return '<div class="wk-hd"><h3>Work surface</h3><span class="wchip">Return</span></div><div class="rb-ws"><div class="hand"><b>In your hand</b><span>'+esc(short(t.med))+' · '+t.entry.qty+' EA</span><span class="bc" style="width:90px;height:22px"></span><button class="mini" data-act="scan">Scan barcode at the station</button></div><div class="rb-box">The drawer it came from opens after the item scans. It goes back in the same pocket.</div></div>';
+  if(t.unlocking)return idle((COMPS[t.comp].title)+' is unlocking. It opens by itself.');
+  if(!t.open)return idle(t.prompt==='accept'?'Drawer closed. Press <b>ACCEPT</b> on the screen.':'');
+  const d=COMPS[t.comp],L=S.layout[t.comp];
+  const chip=t.prompt==='processing'?'<span class="wchip wait">Updating…</span>':t.prompt==='close'?'<span class="wchip go">Ready to close</span>':'<span class="wchip go">Open</span>';
+  const rt=t.kind==='return',DONE=rt?'Returned 1 ✓':'Removed 1 ✓';
+  let h='<div class="wk-hd"><h3>'+d.title+(d.kind==='drawer'?' · '+d.sub+' drawer, top view':(d.type==='tower'&&t.pulled!==null?' · drawer '+d.fronts[t.pulled]+' pulled out':' · inside'))+'</h3>'+chip+'</div>';
+  const tkn=i=>t.items.some(it=>it.slot===i&&it.taken);
+  if(d.type==='tower'){
+    const f=d.fronts;
+    if(t.pulled===null){
+      h+='<div class="tray door" style="--cols:3">';
+      f.forEach((n,j)=>{if(j%3===0)h+='<div class="shelf-l">Shelf '+(j/3+1)+'</div>';h+='<button class="bin tdf" data-act="pullDrw" data-j="'+j+'"><span class="id"><b class="fn">'+n+'</b><span class="bc"></span></span><span class="q">Pull drawer out</span></button>';});
+      h+='</div>';
+    } else {
+      const [a,b]=tRange(t.pulled);
+      h+='<div class="pulled"><div class="pl-hd">BACK OF DRAWER</div>';
+      for(let p=b;p>=a;p--){const i=p-1;const tk=tkn(i);h+='<button class="bin pk'+(tk?' taken':(i===t.slot?' go':''))+'" data-act="bin" data-i="'+i+'"><span class="id"><b>Pocket '+p+'</b>'+(p===a?' · front':'')+'</span><span class="lb">'+esc(L.contents[i])+'</span><span class="q">'+(tk?DONE:'Qty '+L.qty[i])+'</span></button>';}
+      h+='<div class="pl-ft">FRONT · label '+f[t.pulled]+' <span class="bc"></span></div><button class="mini alt" data-act="pushDrw">Push drawer back in</button></div>';
+    }
+  } else if(d.type==='matrix'||d.kind==='door'){
+    h+='<div class="tray'+(d.kind==='door'?' door':'')+(d.type==='fridge'?' fridge':'')+'" style="--cols:'+d.cols+'">';
+    for(let i=0;i<d.n;i++){
+      if(d.kind==='door'&&i%d.cols===0)h+='<div class="shelf-l">Shelf '+(Math.floor(i/d.cols)+1)+'</div>';
+      const tk=tkn(i);
+      h+='<button class="bin'+(tk?' taken':(i===t.slot?' go':''))+'" data-act="bin" data-i="'+i+'"><span class="id">'+(d.kind==='door'?'<b>'+d.nums[i]+'</b><span class="bc"></span>':'Bin '+slotShort(t.comp,i))+'</span><span class="lb">'+esc(L.contents[i])+'</span><span class="q">'+(tk?DONE:'Qty '+L.qty[i])+'</span></button>';
+    }
+    h+='</div>';
+  } else {
+    h+='<div class="tray" style="--cols:'+d.cols+'">';
+    for(let i=0;i<d.n;i++){
+      const id='<span class="id">Pocket '+slotShort(t.comp,i)+'</span>';
+      if(i===t.slot&&t.lid){
+        const n=d.type==='locklid'?t.blindCount-(t.taken?1:0):L.qty[i]+(t.taken?(rt?1:-1):0);
+        const can=!t.taken&&(d.type==='cubie'||t.counted);
+        h+='<div class="pocket open"><span class="lid">LID OPEN</span>'+id+'<span class="lb">'+esc(L.contents[i])+'</span>'+pills(n,d.type==='locklid')+'<span class="btns">'+(can?'<button class="mini" data-act="take">'+(rt?'Put back 1':'Take 1')+'</button>':'')+(t.taken?'<span class="id">'+DONE+'</span>':'')+'<button class="mini alt" data-act="closeLid">Close lid</button></span></div>';
+      } else {
+        const unl=i===t.slot&&d.type==='locklid'&&!t.taken;const mine=t.items.some(it=>it.slot===i);
+        h+='<button class="pocket closed'+(unl?' unlocked':'')+'" data-act="pocket" data-i="'+i+'">'+id+'<span class="lb">'+esc(L.contents[i])+'</span><span class="lk"><span class="led'+(unl?' blink':'')+'"></span>'+(unl?'Unlocked: lift lid':(tkn(i)?'Closed ✓':(i===t.slot?'Opening…':(mine?'Next':'Locked'))))+'</span></button>';
+      }
+    }
+    h+='</div>';
+  }
+  return h+'<button class="push" data-act="closeComp">'+(d.kind==='drawer'?'Push drawer closed':(d.type==='fridge'?'Close refrigerator door':'Close tower door'))+'</button>';
+}
+
+/* ---- coach ---- */
+function coach(){
+  const pid=S.patient.id,he=S.scen.pr[0],his=S.scen.pr[1];
+  const toBed=!S.bedside&&S.pulls.every(m=>S.done[m.id]);const pullsLeft=S.pulls.some(m=>!S.done[m.id]),retLeft=S.returns.some(r=>!S.retDone[r.mid]),soLeft=false;
+  if(S.dialog)return 'This one cannot come out of the cabinet. Tap <b>OK</b>.';
+  switch(S.screen){
+  case 'idle':if(S.bedside&&!S.finished)return 'Your patient refused a dose at the bedside. Touch the screen, sign in again, and return it.';return S.finished?'Done. Check your results, then run it again. Pocket locations change every time.':'Start with your assignment and the EMR on the left (Unscheduled, Scheduled, IV, Group and PRN tabs). Then touch the station screen to begin.';
+  case 'signin':return 'Type any user ID (your initials work) and tap <b>Next</b>.';
+  case 'bio':return 'Click the <b>BioID reader</b> below the screen.';
+  case 'edit':{const wrong=S.my.filter(x=>x!==pid&&!['x1','x2'].includes(x));if(wrong.length)return 'Someone on your list is not your patient. Tap the <b>✕</b> next to them.';return S.my.includes(pid)?'Your patient is on My Patients (right side). Tap <b>Accept</b>.':'Tap the row where the name <i>and</i> DOB match the EMR banner. They move to My Patients on the right.';}
+  case 'menu':if(toBed)return 'All meds are pulled. Tap <b>Sign Out</b> and take them to the bedside.';if(!S.added)return 'Your patient is not on your list yet. Tap <b>My Patients</b>, then <b>Edit Patient List</b>. (All Available Patients works too.)';return (pullsLeft||retLeft||soLeft)?'Tap <b>My Patients</b>.':'Everything is done. Tap <b>Sign Out</b>.';
+  case 'allpts':return S.added?'Added. Tap <b>My Patients</b>.':'Search by last name. Pick the row where the name <i>and</i> DOB match the EMR banner, then tap <b>Add to My Patients</b>.';
+  case 'summary':
+    if(toBed)return 'All meds are pulled. Tap <b>Sign Out</b> and take them to the bedside.';
+    if(!S.my.includes(pid))return 'Your patient is not here yet. Tap <b>Edit Patient List</b> to add them.';
+    if(pullsLeft&&S.selRow!==pid)return 'Find <b>your</b> patient\'s row (match name and DOB to the EMR). Tap any blue circle in that row to open the orders, or select the row and tap <b>Remove</b>.';
+    if(S.selRow!==pid)return 'Select <b>your</b> patient\'s row. Match name and DOB to the EMR.';
+    if(pullsLeft||soLeft)return 'Tap <b>Remove</b>, or tap any blue circle in the row, to open the Med Profile.';
+    if(retLeft)return 'Now tap <b>Return</b> for the dose you will not give.';
+    return 'All done. Tap <b>Sign Out</b>.';
+  case 'profile':return 'Work from the EMR and your assignment. Pull every med due now (Group tab), any one-time order on the Unscheduled tab (it has no due time, so look under All Orders), plus the PRN that matches what '+he+' asked for (PRN tab). Tap the meds to pull, then <b>Remove Med</b>. Meds marked Not Loaded or Out of Stock cannot come out of this cabinet.';
+  case 'remove':return pullCoach(S.task);
+  case 'pulldone':return 'Tap <b>Done</b>, then <b>Sign Out</b> and take the meds to the bedside.';
+  case 'retlist':return 'Select the dose '+he+' refused at the bedside so it moves to the right column, then tap <b>Return</b>. It goes back to the pocket it came from. Doses already given stay given.';
+  case 'past':return 'This list shows what was removed in the last 24 hours. Tap <b>Back</b>.';
+  case 'retseq':{const t=S.task;if(!t)return '';if(t.phase==='open')return retCoach(t);if(t.phase==='scan')return 'Scan the item you are holding: click <b>Scan barcode</b> on the work surface. Use <b>Unable To Scan</b> only if the barcode will not read.';if(t.phase==='qty')return 'Enter how many you are returning, then tap <b>Accept</b>.';if(t.unlocking)return 'The return bin opens by itself.';if(!t.taken)return 'Click <b>Place in return bin</b> on the work surface.';if(t.prompt==='processing')return 'Wait for <b>CLOSE RETURN BIN</b>.';return 'Close the return bin.';}
+  case 'retdone':return 'Tap <b>Done</b>. Then sign out when everything is finished.';
+  }
+  return '';
+}
+function retCoach(t){
+  if(t.closed)return 'Next item coming up.';
+  const d=COMPS[t.comp],loc=slotName(t.comp,t.slot);
+  if(t.unlocking)return 'Watch the cabinet. '+d.title+', where this dose came from, opens by itself.';
+  if(t.prompt==='processing')return 'Hands off. The cabinet is recording the return.';
+  if(t.prompt==='close')return 'Push the drawer closed.';
+  if(t.prompt==='accept')return 'Press <b>ACCEPT</b> to confirm the return. Then close the drawer.';
+  if(d.type==='cubie')return !t.lid&&!t.taken?'The pocket lid pops open by itself.':!t.taken?'Click <b>Put back 1</b> to return the dose to <b>'+loc+'</b>.':'Close the pocket lid.';
+  return 'Put the dose back in its original bin, <b>'+loc+'</b> (outlined in green).';
+}
+function pullCoach(t){
+  if(!t||t.closed)return 'Next item coming up.';
+  const d=COMPS[t.comp],ty=d.type,loc=slotName(t.comp,t.slot);
+  const multi=t.items.length>1?' This '+(d.kind==='drawer'?'drawer':'compartment')+' has '+t.items.length+' of your meds.':'';
+  if(t.unlocking)return 'Watch the cabinet. '+d.title+' opens by itself.';
+  if(t.prompt==='accept'&&ty==='tower')return 'Press <b>ACCEPT</b> or push drawer <b>'+d.fronts[t.pulled===null?tdrw(t.slot):t.pulled]+'</b> back in. Either one confirms this med'+(t.ii<t.items.length-1?' and shows your next one.':'. Then close the tower door.');
+  if(t.prompt==='accept')return t.ii<t.items.length-1?'Press <b>ACCEPT</b>. Your next med is '+(ty==='tower'&&tdrw(t.items[t.ii+1].slot)===tdrw(t.slot)?'in this same drawer, so leave it pulled out.':(ty==='tower'?'in a different drawer behind this door.':'in this same '+(d.kind==='drawer'?'drawer, so leave it open.':'compartment.'))):'Press <b>ACCEPT</b> on the screen. Then close the '+(d.kind==='drawer'?'drawer.':'door.');
+  if(t.prompt==='processing')return 'Hands off. The cabinet is recording the removal.';
+  if(t.prompt==='close')return d.kind==='drawer'?'The screen says <b>CLOSE DRAWER</b>. Push the drawer closed.':(ty==='tower'?'Close the tower door.':'Close the refrigerator door right away so it stays at 2–8 °C.');
+  if(ty==='tower'){
+    const j=tdrw(t.slot),[a,b]=tRange(j);
+    if(t.pulled===null)return 'Your med is in <b>pocket '+(t.slot+1)+'</b>. Each drawer is labeled with the pocket number at its front, and pockets go up from front to back. Pull out drawer <b>'+d.fronts[j]+'</b> (pockets '+a+'–'+b+').';
+    if(t.pulled!==j){const [x,y]=tRange(t.pulled);return 'This drawer holds pockets '+x+'–'+y+'. Push it back in and pull out the drawer that holds pocket '+(t.slot+1)+'.';}
+    return 'Find <b>pocket '+(t.slot+1)+'</b> and read the whole label before you take it.';
+  }
+  if(ty==='matrix')return 'Matrix bins have no lids, so nothing stops a wrong grab. Find <b>'+loc+'</b> on the screen map and read the name <i>and</i> strength before you click.'+multi;
+  if(ty==='cubie')return (!t.lid&&!t.taken?'The CUBIE lid pops open by itself. Wait a second.':!t.taken?'Pocket <b>'+loc+'</b> is open. Read the label, then click <b>Take 1</b>.':'Now <b>close the pocket lid</b>.')+multi;
+  if(ty==='locklid'){if(!t.lid&&!t.taken)return '<b>'+loc+'</b> is unlocked (green outline). Click it to lift the lid.';if(!t.counted)return 'Count every tablet in the open pocket <i>before</i> you take one, and enter that number on the screen.';if(!t.taken)return 'Count accepted. Click <b>Take 1</b>.';return 'Now <b>close the lid</b>.';}
+  return 'Find <b>'+loc+'</b> and take the item. Read the whole label. Similar products sit close together.';
+}
+
+const QUIZ=[{"q": "You finished pulling and are heading to the bedside. What do you do at the station first?", "o": ["Sign out of the station", "Leave it signed in to save time", "Let it time out on its own", "Ask a classmate to sign you out"], "e": "Always sign out before you walk away. Anything done under your sign-in is recorded as yours."}, {"q": "Tower drawer fronts read 14, and the next drawer reads 17. Which pocket is third from the front of drawer 14?", "o": ["Pocket 16", "Pocket 17", "Pocket 15", "Pocket 3"], "e": "Pockets are numbered from the front of the drawer to the back: 14, 15, 16. Pocket 17 starts the next drawer."}, {"q": "You take a med from a CUBIE pocket. What confirms the removal?", "o": ["Closing the pocket lid", "Pressing ACCEPT on the screen", "Scanning the med's barcode", "Pushing the drawer half shut"], "e": "Lidded pockets record the removal when you close the lid. ACCEPT is only for spots without a lid."}, {"q": "Two of your meds are in the same matrix drawer. When do you close the drawer?", "o": ["After the last med's ACCEPT", "Right after the first ACCEPT", "Before pressing ACCEPT at all", "As soon as the drawer opens"], "e": "Press ACCEPT after each med. The drawer stays open until the last one is accepted."}, {"q": "A lock-lid pocket asks you for a count. What number do you enter?", "o": ["How many are there before you take one", "How many will be left after you take one", "How many doses the order calls for today", "How many you removed on the last shift"], "e": "Count what is in the pocket before you remove anything. Entering the end quantity is a common discrepancy."}, {"q": "Your patient refuses a dose you already removed. What do you do with it?", "o": ["Return it to the pocket it came from", "Keep it with you for the next dose due", "Put it in any open bin in the drawer", "Leave it in the patient's room for later"], "e": "A refused dose goes back through Return, into the exact pocket it came from."}, {"q": "A med on the Med Profile is grayed out and says NOT LOADED. What does that mean?", "o": ["It is not stocked in this cabinet", "The order has been discontinued", "Pharmacy has not verified the order", "You do not have access to pull it"], "e": "Not Loaded means this cabinet does not carry it, such as insulin pens, eye drops or nasal sprays."}, {"q": "Two patients on the unit show a NAME ALERT tag. How do you choose the right one?", "o": ["Match name and DOB to the EMR banner", "Pick the one listed first on the screen", "Pick the one with the lower room number", "Ask the unit clerk which one is yours"], "e": "A name alert means two patients share a name. Always confirm a second identifier, such as date of birth."}, {"q": "You took a med from a tower bin, and your next med is in a different bin. What must you do before moving on?", "o": ["Press ACCEPT or push the bin back in", "Close the tower door and reopen it", "Pull the next bin out beside this one", "Sign out and then sign back in again"], "e": "Either ACCEPT or pushing the bin back in confirms the med. Then the screen shows your next one."}, {"q": "How do you decide which meds to pull for the 09:00 med pass?", "o": ["Check the EMR for due meds and PRN requests", "Pull everything listed on the All Orders tab", "Pull the same meds you gave the patient yesterday", "Ask the patient which pills they usually take"], "e": "The EMR is your source. Pull what is due now plus any PRN the patient asked for, and nothing else."}];
+function showQuiz(retake){
+  S.quizOrder=QUIZ.map(x=>shuffle(x.o.map((_,i)=>i)));S.quizShown=false;
+  $('#mbox').innerHTML='<h2 id="mtitle">Quiz: cabinet use</h2><p>Answer all 10 questions. You need 8 correct to get your certificate.'+(retake?' The answer order has been shuffled.':'')+'</p><form id="quizForm" class="quiz">'+
+   QUIZ.map((x,i)=>'<fieldset class="qz" id="qz'+i+'"><legend><b>'+(i+1)+'.</b> '+esc(x.q)+'</legend>'+S.quizOrder[i].map(k=>'<label><input type="radio" name="q'+i+'" value="'+k+'"> '+esc(x.o[k])+'</label>').join('')+'<div class="qz-fb" hidden></div></fieldset>').join('')+
+   '</form><div class="mact" id="quizAct"><button data-act="quizSubmit">Submit answers</button><button class="alt" data-act="closeCert">Back to results</button></div>';
+  $('#modal').hidden=false;$('#mbox').scrollTop=0;
+}
+function quizSubmit(){
+  const ans=QUIZ.map((x,i)=>{const c=document.querySelector('input[name="q'+i+'"]:checked');return c?+c.value:null;});
+  const miss=ans.map((a,i)=>a===null?i+1:0).filter(Boolean);
+  if(miss.length){const fb=$('#quizAct');let n=document.getElementById('quizMiss');if(!n){n=document.createElement('p');n.id='quizMiss';n.className='qz-miss';fb.parentNode.insertBefore(n,fb);}n.textContent='Answer every question first. Missing: '+miss.join(', ')+'.';return;}
+  const score=ans.filter(a=>a===0).length;S.quizScore=score;S.quizPassed=S.quizPassed||score>=8;
+  QUIZ.forEach((x,i)=>{const f=document.getElementById('qz'+i),ok=ans[i]===0,fb=f.querySelector('.qz-fb');f.classList.add(ok?'ok':'no');fb.hidden=false;fb.innerHTML='<b>'+(ok?'Correct.':'Not quite. Answer: '+esc(x.o[0])+'.')+'</b> '+esc(x.e);f.querySelectorAll('input').forEach(n=>n.disabled=true);});
+  const m=document.getElementById('quizMiss');if(m)m.remove();
+  $('#quizAct').innerHTML='<p class="qz-score">Score: <b>'+score+' / 10</b>. '+(score>=8?'You passed.':'You need 8 to pass.')+'</p>'+(score>=8?'<button data-act="cert">Get certificate of completion</button>':'<button data-act="quizRetake">Retake the quiz</button>')+'<button class="alt" data-act="closeCert">Back to results</button>';
+  $('#quizAct').classList.add('qz-done');
+}
+/* ---- tutorial ---- */
+function startTut(){newRun(0,'tutorial');showWelcome();}
+function startPractice(){if(!TUT_DONE){toast('info','Finish the tutorial first.');render();return;}let i=rint(0,SCEN.length-1);newRun(i,'practice');}
+function showWelcome(){
+  $('#mbox').innerHTML='<h2 id="mtitle">Welcome to Med Cabinet Pull Practice</h2>'+
+   '<p>You will practice a full med pull on simulated unit 2E-PCU, from sign-in to returning a refused dose.</p>'+
+   '<ul class="tlist"><li><b>Left: EMR.</b> Your source for what to pull. Use the Unscheduled, Scheduled, IV, Group and PRN tabs.</li><li><b>Middle: the station screen.</b> Sign in, find your patient, choose meds, ACCEPT.</li><li><b>Right: the cabinet.</b> Drawers and doors open by themselves. What is inside shows on the work surface below them.</li></ul>'+
+   '<p><b>1 · Tutorial</b> walks you through every step with the next click outlined in orange. <b>2 · Practice</b> unlocks when you finish it. Complete a practice run to print a certificate for clinical.</p>'+
+   '<div class="mact"><button data-act="closeModal">Start the tutorial</button>'+(TUT_DONE?'<button class="alt" data-act="startPractice">Skip to practice</button>':'')+'</div>';
+  $('#modal').hidden=false;
+}
+const TUT_TITLES=['','Wake the screen','Enter your user ID','Scan your fingerprint','Open My Patients','Add your patient to My Patients','Open the Med Profile','Choose meds using the EMR','Pull each med','Finish and sign out','At the bedside','Sign back in','Return the refused dose','Sign out'];
+const TUT_ABOUT=['',
+ 'The station sleeps until someone touches the screen. Everything you do from here is recorded under your sign-in.',
+ 'On the unit you use your own hospital user ID. For practice, your initials work.',
+ 'Your fingerprint is your signature. Never let anyone else use your sign-in, and never use theirs.',
+ 'My Patients is your working list. Your patient has to be on it before you can pull from the Med Profile this way.',
+ 'Match the name and date of birth to the EMR banner. Watch for the orange NAME ALERT tag: it means two patients on this unit share a name.',
+ 'Tap Remove with your patient selected, or tap any blue circle in their row.',
+ 'Group tab: meds due now. PRN tab: as-needed meds; pull only what the patient asked for. Unscheduled: one-time orders such as vaccines, not part of this pull. Gray meds are Not Loaded or Out of Stock; tap one to see. IV fluids are not kept in the cabinet.',
+ '',
+ 'Everything is pulled. Sign out every time you walk away from the station.',
+ 'You scanned the wristband and each med before giving them. A refused dose has to go back into the cabinet.',
+ 'Sign in again the same way: user ID, then fingerprint.',
+ 'Returns go back to the exact pocket they came from. Scan the item first.',
+ 'All done. Always sign out when you finish.'];
+const PULL_ABOUT={matrix:'Matrix drawer: open bins, no lids. Take the med, press ACCEPT, then close the drawer. If another med is in the same drawer, it stays open until the last ACCEPT.',
+ cubie:'CUBIE pocket: the lid pops open by itself. Take the med and close the lid. There is no ACCEPT. Wait for CLOSE DRAWER, then close the drawer.',
+ locklid:'Lock-lid drawer (controlled substance): lift the unlocked lid and count what is in the pocket BEFORE you take one. Take the med, close the lid, then close the drawer when told.',
+ tower:'Tower bins: each drawer is labeled with the pocket number at its front, and pockets go up from front to back. Pull out the right drawer, take the med, then press ACCEPT or push the drawer back in. Close the door after the last med.',
+ fridge:'Refrigerator: take the med, press ACCEPT, then close the door right away so it stays at 2–8 °C.'};
+function tutStep(){
+  const pid=S.patient.id,toBed=!S.bedside&&S.pulls.every(m=>S.done[m.id]);
+  let n=1;
+  if(!$('#modal').hidden&&S.bedside&&!S.signedIn&&!S.finished)n=10;
+  else if(S.finished)n=13;
+  else if(S.bedside){
+    if(!S.signedIn)n=11;
+    else if(['signin','bio'].includes(S.screen))n=11;
+    else if(S.returns.every(r=>S.retDone[r.mid])&&!['retseq','retdone'].includes(S.screen))n=13;
+    else if(S.screen==='menu'&&!S.retStarted)n=11;
+    else n=12;
+  }
+  else if(toBed)n=9;
+  else if(S.screen==='idle')n=1;
+  else if(S.screen==='signin')n=2;
+  else if(S.screen==='bio')n=3;
+  else if(!S.my.includes(pid))n=['edit','allpts'].includes(S.screen)?5:4;
+  else if(['edit','allpts'].includes(S.screen))n=5;
+  else if(S.screen==='menu'||S.screen==='summary')n=6;
+  else if(S.screen==='profile')n=7;
+  else n=8;
+  let about=TUT_ABOUT[n];
+  if(n===8){const t=S.task;about=t?PULL_ABOUT[COMPS[t.comp].type]:'Next item coming up.';}
+  if(n===12&&S.task&&S.task.phase==='open')about='Returns go back to the exact pocket they came from: '+slotName(S.task.comp,S.task.slot)+'.';
+  return [n,TUT_TITLES[n],about];
+}
+function tutTarget(){
+  const pid=S.patient.id,t=S.task;
+  if(!$('#modal').hidden)return '#mbox [data-act=closeModal]';
+  const toBed=!S.bedside&&S.pulls.every(m=>S.done[m.id]);
+  const retLeft=S.bedside&&S.returns.some(r=>!S.retDone[r.mid]);
+  switch(S.screen){
+  case 'idle':return S.finished?null:'#pxscr .idle';
+  case 'signin':return S.userId.trim()?'[data-act=next]':'#pxuid';
+  case 'bio':return '#bioid';
+  case 'menu':return (toBed||(S.bedside&&!retLeft))?'.px-so':'[data-act=go][data-v=summary]';
+  case 'allpts':return '[data-act=go][data-v=summary]';
+  case 'edit':return S.my.includes(pid)?'[data-act=go][data-v=summary]':'[data-act=editAdd][data-id='+pid+']';
+  case 'summary':
+    if(!S.my.includes(pid))return '[data-act=go][data-v=edit]';
+    if(toBed||(S.bedside&&!retLeft))return '.px-so';
+    if(S.selRow!==pid)return '[data-act=selRow][data-id='+pid+']';
+    return retLeft?'[data-act=return]':'[data-act=remove]';
+  case 'profile':{
+    const need=S.pulls.filter(m=>!S.done[m.id]&&!S.picks.includes(m.id)).sort((a,b)=>a.gen.localeCompare(b.gen));
+    if(!need.length)return '[data-act=removeMed]';
+    const m=need[0];
+    if(m.due==='PRN'&&S.tab==='due')return '[data-act=tab][data-v=prn]';
+    if(m.due!=='PRN'&&S.tab==='prn')return '[data-act=tab][data-v=due]';
+    return '[data-act=pick][data-id='+m.id+']';}
+  case 'pulldone':case 'retdone':return '[data-act=backSummary]';
+  case 'retlist':{const k=S.rlist.findIndex(r=>r.ret&&!S.retDone[r.mid]&&!S.rpicks.includes(String(S.rlist.indexOf(r))));return k>=0?'[data-act=rpick][data-k="'+k+'"]':'[data-act=returnMed]';}
+  case 'remove':case 'retseq':return taskTarget(t);
+  }
+  return null;
+}
+function taskTarget(t){
+  if(!t||t.closed||t.unlocking)return null;
+  if(t.kind==='return'&&t.phase==='scan')return '[data-act=scan]';
+  if(t.kind==='return'&&t.phase==='qty')return '#pxretq';
+  if(!t.open)return null;
+  const ty=COMPS[t.comp].type;
+  if(t.prompt==='processing')return null;
+  if(t.prompt==='accept')return ty==='tower'?'[data-act=accept]':'[data-act=accept]';
+  if(t.prompt==='close')return ty==='tower'&&t.pulled!==null?'[data-act=pushDrw]':'#work .push';
+  if(ty==='cubie')return !t.lid?null:(!t.taken?'[data-act=take]':'[data-act=closeLid]');
+  if(ty==='locklid'){if(!t.lid&&!t.taken)return '[data-act=pocket][data-i="'+t.slot+'"]';if(!t.counted)return '#pxcount';if(!t.taken)return '[data-act=take]';return '[data-act=closeLid]';}
+  if(ty==='tower'){const j=tdrw(t.slot);if(t.pulled===null)return '[data-act=pullDrw][data-j="'+j+'"]';if(t.pulled!==j)return '[data-act=pushDrw]';}
+  return '[data-act=bin][data-i="'+t.slot+'"]';
+}
+let lastSpot=null;
+function spotlight(){
+  document.querySelectorAll('.tut-spot').forEach(e=>e.classList.remove('tut-spot'));
+  if(!S||S.mode!=='tutorial')return;
+  const sel=tutTarget();if(!sel)return;
+  const el=document.querySelector(sel);if(!el)return;
+  el.classList.add('tut-spot');
+  if(sel!==lastSpot){lastSpot=sel;try{el.scrollIntoView({block:'nearest',inline:'nearest'});}catch(x){}}
+}
+
+/* ---- results ---- */
+function showResults(){
+  const e=S.errors,sc=S.scen;
+  const checks=[['Added the right patient to My Patients',S.added]];
+  S.pulls.forEach(m=>checks.push(['Pulled '+short(m),!!S.done[m.id]]));
+  S.returns.forEach(r=>checks.push(['Returned '+short(med(r.mid)),!!S.retDone[r.mid]]));
+  const allOk=checks.every(c=>c[1]);S.allOk=allOk;
+  if(S.mode==='tutorial'&&allOk){TUT_DONE=true;try{localStorage.setItem('mcpp-tut','1');}catch(x){}}
+  const nl=sc.meds.filter(m=>m.cls==='nl'&&m.due==='09:00'&&!m.cont).sort((a,b)=>a.gen.localeCompare(b.gen));
+  $('#mbox').innerHTML='<h2 id="mtitle">'+(S.mode==='tutorial'?(allOk?'Tutorial complete':'Tutorial not finished'):allOk&&!e.length?'Clean pull':(e.length?e.length+' error'+(e.length===1?'':'s')+' to review':'Almost there'))+'</h2><div>'+esc(tc(S.patient.first)+' '+tc(S.patient.last))+' · '+(S.mode==='tutorial'?'Tutorial':'Practice')+'</div>'+
+   '<div class="mstats"><div><b>'+fmtTime(S.end-S.start)+'</b>time</div><div><b>'+checks.filter(c=>c[1]).length+'/'+checks.length+'</b>tasks done</div><div><b>'+e.length+'</b>errors</div></div>'+
+   '<h3>Tasks</h3><ul class="ck">'+checks.map(c=>'<li class="'+(c[1]?'y':'')+'">'+esc(c[0])+'</li>').join('')+'</ul>'+
+   '<h3>Errors</h3>'+(e.length?'<ol class="elist">'+e.map(x=>'<li>'+esc(x.what)+'<span>'+esc(x.why)+'</span></li>').join('')+'</ol>':'<div class="clean">No errors. You checked the patient, held what needed holding, closed every pocket and waited for every close prompt.</div>')+
+   '<h3>09:00 meds that were not in the cabinet</h3><ul class="tlist">'+nl.map(m=>'<li><b>'+esc(tc(m.gen))+'</b> ('+esc(m.str.toLowerCase())+'): Not Loaded</li>').join('')+sc.meds.filter(m=>m.cls==='stockout').map(m=>'<li><b>'+esc(tc(m.gen))+'</b> ('+esc(m.str.replace(/\s*\(1 EA\)/,'').toLowerCase())+'): Out of Stock</li>').join('')+'</ul>'+
+   (S.mode==='tutorial'
+     ?(allOk?'<div class="clean" style="margin-top:14px">Practice is unlocked. In practice there is no coach and no highlighting, and the patient changes.</div><div class="mact"><button data-act="startPractice">Start practice</button><button class="alt" data-act="startTut">Repeat the tutorial</button><button class="alt" data-act="exit">Exit simulation</button></div>'
+            :'<div class="mact"><button data-act="startTut">Repeat the tutorial</button><button class="alt" data-act="exit">Exit simulation</button></div>')
+     :(allOk?'<div class="clean" style="margin-top:14px">Every task is done. Pass a short quiz (8 of 10) to get your certificate of completion for clinical.</div><div class="mact"><button data-act="cert">'+(S.quizPassed?'Get certificate of completion':'Take the quiz')+'</button><button class="alt" data-act="new">Practice another patient</button><button class="alt" data-act="exit">Exit simulation</button></div>'
+            :'<div class="mact"><button data-act="again">Run again (pockets reshuffle)</button><button class="alt" data-act="new">New patient</button><button class="alt" data-act="exit">Exit simulation</button></div><p class="foot" style="margin-top:10px">Finish every task in a practice run to unlock the certificate.</p>'));
+  $('#modal').hidden=false;
+}
+function showBedside(){
+  const p=S.patient,ref=S.returns.map(x=>short(med(x.mid)));
+  $('#mbox').innerHTML='<h2 id="mtitle">At the bedside</h2><div>'+esc(tc(p.first)+' '+tc(p.last))+' · '+p.loc+'</div>'+
+   '<p>You scanned the wristband and each med. '+tc(S.scen.pr[0])+' took everything except:</p><ul class="tlist">'+ref.map(x=>'<li><b>'+esc(x)+'</b>, refused</li>').join('')+'</ul>'+
+   '<p>You are holding '+(ref.length>1?'these doses':'this dose')+'. Go back to the cabinet, sign in again, and return '+(ref.length>1?'them':'it')+'.</p>'+
+   '<div class="mact"><button data-act="closeModal">Back to the med room</button></div>';
+  $('#modal').hidden=false;
+}
+function showCert(){
+  const d=new Date(S.end||Date.now());
+  const date=d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})+' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  $('#mbox').innerHTML='<h2 id="mtitle">Certificate of completion</h2>'+
+   '<div class="cert-form"><label for="certName">Your full name<input id="certName" data-input="certName" autocomplete="name" value="'+esc(S.certName||'')+'"></label>'+
+   '<label for="certProg">Program or course<input id="certProg" data-input="certProg" value="'+esc(S.certProg||'Mohawk Valley Community College · Nursing')+'"></label></div>'+
+   '<div id="cert"><div class="cert-in"><div class="cert-k">Certificate of Completion</div><div class="cert-h">Medication Cabinet Pull Practice</div><div class="cert-p">This certifies that</div>'+
+   '<div class="cert-n" id="certNameOut">'+esc(S.certName||'Your name')+'</div>'+
+   '<div class="cert-p">completed the step-by-step tutorial, a full practice run and a 10-question quiz in the automated medication cabinet simulation: signing in, adding a patient to My Patients, selecting meds from the EMR, pulling from matrix, CUBIE, lock-lid, tower and refrigerator locations, and returning a refused dose to its original pocket.</div>'+
+   '<div class="cert-g"><div><span>Program</span><b id="certProgOut">'+esc(S.certProg||'Mohawk Valley Community College · Nursing')+'</b></div><div><span>Completed</span><b>'+date+'</b></div><div><span>Practice patient</span><b>'+esc(tc(S.patient.first)+' '+tc(S.patient.last))+'</b></div><div><span>Time · errors</span><b>'+fmtTime(S.end-S.start)+' · '+S.errors.length+'</b></div><div><span>Quiz score</span><b>'+(S.quizScore!=null?S.quizScore:'–')+' / 10</b></div><div><span>Unit</span><b>2E-PCU (simulated)</b></div></div>'+
+   '<div class="cert-s"><div>Student signature</div><div>Clinical instructor</div></div><div class="cert-f">Simulated unit 2E-PCU · training simulation, not affiliated with BD</div></div></div>'+
+   '<div class="mact"><button data-act="print">Print certificate</button><button class="alt" data-act="closeCert">Back to results</button><button class="alt" data-act="exit">Exit simulation</button></div>'+
+   '<p class="foot" style="margin-top:8px">If the print window does not open, press Ctrl+P (Windows) or ⌘P (Mac). Choose landscape.</p>';
+  $('#modal').hidden=false;
+}
+function exitSim(){
+  hideModal();S.task=null;
+  $('.app').hidden=true;$('#exitScreen').hidden=false;
+  try{window.close();}catch(x){}
+}
+function hideModal(){$('#modal').hidden=true;}
+
+/* ================= events ================= */
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');
+  if(!t&&S&&S.screen==='idle'&&!S.finished&&e.target.closest('#pxscr')){act('touch',{});return;}
+  if(!t||t.disabled)return;e.preventDefault();act(t.dataset.act,t.dataset);});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.input;if(!k)return;
+  if(k==='uid')S.userId=e.target.value;
+  else if(k==='search'){S.search=e.target.value;if(S.screen==='allpts'||S.screen==='edit')S.apSel=null;render();}
+  else if(k==='count'&&S.task)S.task.countValue=e.target.value.replace(/\D/g,'').slice(0,2);
+  else if(k==='retq'&&S.task)S.task.qtyValue=e.target.value.replace(/\D/g,'').slice(0,2);
+  else if(k==='certName'){S.certName=e.target.value;$('#certNameOut').textContent=e.target.value||'Your name';}
+  else if(k==='certProg'){S.certProg=e.target.value;$('#certProgOut').textContent=e.target.value;}});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.getAttribute&&e.target.getAttribute('role')==='button'&&e.target.dataset.act){e.preventDefault();act(e.target.dataset.act,e.target.dataset);return;}
+  if(e.key!=='Enter')return;const k=e.target.dataset&&e.target.dataset.input;
+  const map={uid:'next',count:'countOk',retq:'qtyOk'};if(map[k]){e.preventDefault();act(map[k],{});}});
+setInterval(()=>{if(!S)return;$('#timer').textContent=fmtTime((S.end||Date.now())-S.start);},500);
+let TUT_DONE=false;try{TUT_DONE=localStorage.getItem('mcpp-tut')==='1';}catch(x){}
+newRun(0,'tutorial');
+showWelcome();
+</script>
+</body>
+</html>
